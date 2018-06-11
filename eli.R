@@ -16,11 +16,27 @@
 
 setwd("/Users/malishev/Documents/Data/Eli")
 list.files()
-d <- "feb" # choose month or total period
+d <- "may" # choose month or total period
 data <- read.csv(paste0(d,".csv"),header=T,sep=",", stringsAsFactors=FALSE)
 colnames(data) <- c("Activity","Trait","Start","Finish","Measure")
 data[c("Activity", "Trait")] <- sapply(data[c("Activity", "Trait")],as.character)
 head(data)
+
+### subset activities ###
+unique(data$Activity)
+grow <- subset(data,subset=Activity=="Growth");grow
+feed <- subset(data,subset=Activity=="Feeding");head(feed)
+sleep <- subset(data,subset=Activity=="Sleep");sleep
+diaper <- subset(data,subset=Activity=="Diapering");diaper
+leisure <- subset(data,subset=Activity=="Leisure");leisure
+
+
+### subset traits ###
+breast_l <- subset(feed,subset="Right Breast");breast_l
+breast_r
+head(data,100)
+
+# get time for each state by month, no need for day
 
 #change time vectors from character to posix    
 ?split
@@ -39,23 +55,35 @@ ss <- unlist(ss);ss
 ss <- lapply(ss, as.character);ss
 
 #opt 2 # gsub replaces all instances
-ss <- gsub("-2018","",data$Start);tail(ss)[1]
-ss <- gsub("-","/",ss);tail(ss)[1]
+ss <- gsub("-2018","",data$Start);head(ss)[1]
+ss <- gsub("-"," ",ss);head(ss)[1]
 
 #opt 3
-ss <- sub("-2018","",data$Start);ss[1]
+month <- sub("-2018","",data$Start);month[1]
+month <- strsplit(month,"-");month[1]
+month <- month
+
+?as.POSIXct(ss,tz="UTC+5") # convert to posix
 month.abb
 month.name
 ff <- substr(ss,0,6) ;ff[1] # separate first section before period 
 t <- substr(ss,9,99) ;t # separate second section after period 
 t <- gsub(" pm","",t);t # remove pm
 t <- gsub(" am","",t);t # remove am
-format(as.POSIXct((ll) * 86400, origin = "1970-01-01", tz = "UTC"), "%H:%M") #convert to POSIX     
+format(as.POSIXct((t) * 86400, origin = "1970-01-01", tz = "UTC"), "%H:%M") #convert to POSIX     
 # add time col to df after separating (only need time difference to get activity time per activity state for plots)   
+# add zero to hour
 hour <- substr(t,1,2);hour# create hour col
 min <- substr(t,3,99);min# create min col
 
-
+#opt 4
+ss <- sub("-2018","",data$Start);ss[1]
+ss <- sub("-","/",ss);ss
+as.POSIXct(ss,tz="UTC+5") # convert to posix
+?strptime
+as.difftime(c("3:20", "23:15"), format = "%H:%M") # 3rd gives NA
+as.numeric(z, units = "mins")
+?difftime
 
 class(strsplit(data$Start, "-")[[101]]) # this is a character vec
 
