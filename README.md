@@ -8,3 +8,9 @@ Files:
 .csv  
 .pdf    
 
+Data viz ideas:  
+https://www.pinterest.com/pin/583568064189656691/  
+https://www.pinterest.com/pin/583568064189656687/  
+https://www.pinterest.com/pin/583568064189491436/  
+https://www.pinterest.com/pin/583568064189491268/  
+
