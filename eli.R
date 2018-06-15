@@ -1,4 +1,13 @@
 ### The Life of Eli ###
+
+# TO DO
+# separate activity states
+# activity states with traits: grow,feed,diaper,leisure
+
+unique(data$Activity)
+# separate hour and mins, then convert time to hours 
+
+
 ### devtools::session_info()
 # !!! reinstalls all packages 
 ### update.packages(ask = FALSE, dependencies = c('Suggests'))
@@ -20,8 +29,8 @@ d <- "may" # choose month or total period
 data <- read.csv(paste0(d,".csv"),header=T,sep=",", stringsAsFactors=FALSE)
 colnames(data) <- c("Activity","Trait","Start","Finish","Measure")
 data[c("Activity", "Trait")] <- sapply(data[c("Activity", "Trait")],as.character)
-head(data)
-
+head(data) 
+ 
 ### subset activities ###
 unique(data$Activity)
 grow <- subset(data,subset=Activity=="Growth");grow
