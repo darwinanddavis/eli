@@ -1,4 +1,7 @@
-### Eli infographic  
+# Eli infographic  
+## Matthew Malishev*  
+
+#### *Corresponding author: matthew.malishev@gmail.com   
 
 Code for Eli infographic showing activity states for year 1  
 
