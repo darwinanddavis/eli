@@ -9,7 +9,8 @@ Files:
 .R  
 .Rmd  
 .csv  
-.pdf    
+.pdf  
+.html  
 
 Data viz ideas:  
 https://www.pinterest.com/pin/583568064189656691/  
