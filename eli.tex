@@ -1,0 +1,367 @@
+\documentclass[10,portrait]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{
+            pdftitle={The Life of Eli},
+            colorlinks=true,
+            linkcolor=pink,
+            citecolor=red,
+            urlcolor=blue,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage[]{biblatex}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage[normalem]{ulem}
+% avoid problems with \sout in headers with hyperref:
+\pdfstringdefDisableCommands{\renewcommand{\sout}{}}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{The Life of Eli}
+\author{Matthew Malishev\textsuperscript{1}*\\
+\emph{\textsuperscript{1} Department of Biology, Emory University, 1510
+Clifton Road NE, Atlanta, GA, USA, 30322}}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+~
+
+Date: 2018-08-18\\
+R version: 3.5.0\\
+*Corresponding author:
+\href{mailto:matthew.malishev@gmail.com}{\nolinkurl{matthew.malishev@gmail.com}}\\
+This document can be found at
+\url{https://github.com/darwinanddavis/Eli}
+
+\newpage  
+
+\section{The Life of Eli}\label{the-life-of-eli}
+
+\subsection{Overview}\label{overview}
+
+Activity data for Eli for his first year, including time spent feeding,
+sleeping, in leisure and values for growth and other behavoural traits.
+
+TO DO\\
+* \sout{separate activity states}\\
+* separate hour and mins, then convert time to hours
+
+\subsubsection{Load and clean data}\label{load-and-clean-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{setwd}\NormalTok{(params}\OperatorTok{$}\NormalTok{dir) }\CommentTok{# set wd}
+\KeywordTok{list.files}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "april.csv" "eli.pdf"   "eli.R"     "eli.Rmd"   "Eli.Rproj" "eli.tex"   "feb.csv"   "march.csv"
+[9] "may.csv"  
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{d <-}\StringTok{ "may"} \CommentTok{# choose month or total period}
+
+\NormalTok{data <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(d,}\StringTok{".csv"}\NormalTok{),}\DataTypeTok{header=}\NormalTok{T,}\DataTypeTok{sep=}\StringTok{","}\NormalTok{, }\DataTypeTok{stringsAsFactors=}\OtherTok{FALSE}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(data) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{,}\StringTok{"Trait"}\NormalTok{,}\StringTok{"Start"}\NormalTok{,}\StringTok{"Finish"}\NormalTok{,}\StringTok{"Value"}\NormalTok{)}
+\NormalTok{data[}\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{, }\StringTok{"Trait"}\NormalTok{)] <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(data[}\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{, }\StringTok{"Trait"}\NormalTok{)],as.character)}
+\KeywordTok{head}\NormalTok{(data) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 6 x 5
+  Activity Trait        Start                 Finish                Value 
+* <chr>    <chr>        <chr>                 <chr>                 <chr> 
+1 Growth   Head         16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  35cm  
+2 Growth   Height       16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  53cm  
+3 Growth   Weight       16-Feb.-2018 11:59 pm 16-Feb.-2018 11:59 pm 3.61kg
+4 Feeding  Right Breast 18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am  ""    
+5 Feeding  Left Breast  18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am  ""    
+6 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am  ""    
+\end{verbatim}
+
+\subsubsection{Subset activities}\label{subset-activities}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{unique}\NormalTok{(data}\OperatorTok{$}\NormalTok{Activity)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "Growth"    "Feeding"   "Sleep"     "Diapering" "Health"    "Leisure"   "Pumping"  
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{grow <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data,}\DataTypeTok{subset=}\NormalTok{Activity}\OperatorTok{==}\StringTok{"Growth"}\NormalTok{);grow}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 16 x 5
+   Activity Trait  Start                 Finish                Value               
+ * <chr>    <chr>  <chr>                 <chr>                 <chr>               
+ 1 Growth   Head   16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  35cm                
+ 2 Growth   Height 16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  53cm                
+ 3 Growth   Weight 16-Feb.-2018 11:59 pm 16-Feb.-2018 11:59 pm 3.61kg              
+ 4 Growth   Weight 27-Feb.-2018 12:00 pm 27-Feb.-2018 12:00 pm 3.67kg              
+ 5 Growth   Weight 07-Mar.-2018 1:08 pm  07-Mar.-2018 1:08 pm  4.01kg              
+ 6 Growth   Height 07-Mar.-2018 1:08 pm  07-Mar.-2018 1:08 pm  55cm                
+ 7 Growth   Head   07-Mar.-2018 1:08 pm  07-Mar.-2018 1:08 pm  37.5cm              
+ 8 Growth   Weight 21-Mar.-2018 10:45 am 21-Mar.-2018 10:45 am 4.695kg             
+ 9 Growth   Weight 28-Mar.-2018 6:09 pm  28-Mar.-2018 6:09 pm  5.1kg               
+10 Growth   Weight 11-Apr.-2018 11:12 am 11-Apr.-2018 11:12 am 5.5kg               
+11 Growth   Weight 16-Apr.-2018 2:28 pm  16-Apr.-2018 2:28 pm  5.5kg, @ babybunting
+12 Growth   Weight 24-Apr.-2018 10:14 pm 24-Apr.-2018 10:14 pm 5.73kg              
+13 Growth   Height 24-Apr.-2018 10:15 pm 24-Apr.-2018 10:15 pm 61.5cm              
+14 Growth   Head   24-Apr.-2018 10:16 pm 24-Apr.-2018 10:16 pm 40cm                
+15 Growth   Weight 10/05/18 12:14        10/05/18 12:14        6kg                 
+16 Growth   Height 23/05/18 20:20        23/05/18 20:20        63cm                
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{feed <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data,}\DataTypeTok{subset=}\NormalTok{Activity}\OperatorTok{==}\StringTok{"Feeding"}\NormalTok{);}\KeywordTok{head}\NormalTok{(feed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 6 x 5
+  Activity Trait        Start                 Finish                Value
+* <chr>    <chr>        <chr>                 <chr>                 <chr>
+1 Feeding  Right Breast 18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am  ""   
+2 Feeding  Left Breast  18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am  ""   
+3 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am  ""   
+4 Feeding  Left Breast  18-Feb.-2018 7:39 am  18-Feb.-2018 8:05 am  ""   
+5 Feeding  Right Breast 18-Feb.-2018 10:12 am 18-Feb.-2018 10:45 am ""   
+6 Feeding  Left Breast  18-Feb.-2018 10:48 am 18-Feb.-2018 11:35 am ""   
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sleep <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data,}\DataTypeTok{subset=}\NormalTok{Activity}\OperatorTok{==}\StringTok{"Sleep"}\NormalTok{);sleep}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 645 x 5
+   Activity Trait Start                 Finish                Value
+ * <chr>    <chr> <chr>                 <chr>                 <chr>
+ 1 Sleep    ""    18-Feb.-2018 8:53 am  18-Feb.-2018 9:41 am  ""   
+ 2 Sleep    ""    18-Feb.-2018 11:32 am 18-Feb.-2018 3:16 pm  ""   
+ 3 Sleep    ""    18-Feb.-2018 10:24 pm 18-Feb.-2018 10:52 pm ""   
+ 4 Sleep    ""    19-Feb.-2018 1:40 am  19-Feb.-2018 3:00 am  ""   
+ 5 Sleep    ""    19-Feb.-2018 3:36 am  19-Feb.-2018 3:38 am  ""   
+ 6 Sleep    ""    19-Feb.-2018 5:15 pm  19-Feb.-2018 6:05 pm  ""   
+ 7 Sleep    ""    19-Feb.-2018 8:30 pm  19-Feb.-2018 10:54 pm ""   
+ 8 Sleep    ""    20-Feb.-2018 1:07 am  20-Feb.-2018 2:08 am  ""   
+ 9 Sleep    ""    20-Feb.-2018 3:09 am  20-Feb.-2018 3:45 am  ""   
+10 Sleep    ""    20-Feb.-2018 4:43 am  20-Feb.-2018 5:40 am  ""   
+# ... with 635 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{diaper <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data,}\DataTypeTok{subset=}\NormalTok{Activity}\OperatorTok{==}\StringTok{"Diapering"}\NormalTok{);diaper}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 1,080 x 5
+   Activity  Trait     Start                 Finish                Value                          
+ * <chr>     <chr>     <chr>                 <chr>                 <chr>                          
+ 1 Diapering Pee & Poo 18-Feb.-2018 10:01 am 18-Feb.-2018 10:01 am olive                          
+ 2 Diapering Poo       18-Feb.-2018 6:42 pm  18-Feb.-2018 6:42 pm  licorice, shiny                
+ 3 Diapering Poo       18-Feb.-2018 10:00 pm 18-Feb.-2018 10:00 pm small like earlier, olive green
+ 4 Diapering Pee       20-Feb.-2018 2:46 am  20-Feb.-2018 2:46 am  ""                             
+ 5 Diapering Poo       20-Feb.-2018 2:47 am  20-Feb.-2018 2:47 am  Fresh. Olive/brown             
+ 6 Diapering Pee & Poo 20-Feb.-2018 3:54 am  20-Feb.-2018 3:54 am  ""                             
+ 7 Diapering Pee       20-Feb.-2018 11:20 am 20-Feb.-2018 11:20 am ""                             
+ 8 Diapering Pee       20-Feb.-2018 4:29 pm  20-Feb.-2018 4:29 pm  ""                             
+ 9 Diapering Poo       20-Feb.-2018 4:31 pm  20-Feb.-2018 4:31 pm  ""                             
+10 Diapering Pee       20-Feb.-2018 7:09 pm  20-Feb.-2018 7:09 pm  ""                             
+# ... with 1,070 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{leisure <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(data,}\DataTypeTok{subset=}\NormalTok{Activity}\OperatorTok{==}\StringTok{"Leisure"}\NormalTok{);leisure}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 84 x 5
+   Activity Trait      Start                 Finish                Value
+ * <chr>    <chr>      <chr>                 <chr>                 <chr>
+ 1 Leisure  Bath time  13-Mar.-2018 10:15 pm 13-Mar.-2018 10:30 pm ""   
+ 2 Leisure  Bath time  15-Mar.-2018 9:15 pm  15-Mar.-2018 9:30 pm  ""   
+ 3 Leisure  Tummy time 17-Mar.-2018 8:00 pm  17-Mar.-2018 8:02 pm  ""   
+ 4 Leisure  Bath time  17-Mar.-2018 9:10 pm  17-Mar.-2018 9:30 pm  ""   
+ 5 Leisure  Tummy time 18-Mar.-2018 6:40 pm  18-Mar.-2018 6:45 pm  ""   
+ 6 Leisure  Tummy time 20-Mar.-2018 12:09 am 20-Mar.-2018 12:14 am ""   
+ 7 Leisure  Tummy time 21-Mar.-2018 10:52 pm 21-Mar.-2018 10:54 pm ""   
+ 8 Leisure  Bath time  22-Mar.-2018 11:05 pm 22-Mar.-2018 11:29 pm ""   
+ 9 Leisure  Bath time  24-Mar.-2018 9:10 pm  24-Mar.-2018 9:34 pm  ""   
+10 Leisure  Tummy time 24-Mar.-2018 9:37 pm  24-Mar.-2018 9:40 pm  ""   
+# ... with 74 more rows
+\end{verbatim}
+
+\subsubsection{Subset traits}\label{subset-traits}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# activity states with traits: grow,feed,diaper,leisure}
+
+\CommentTok{# grow}
+
+\CommentTok{# feed}
+\NormalTok{breast_l <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(feed,}\DataTypeTok{subset=}\NormalTok{Trait}\OperatorTok{==}\StringTok{"Left Breast"}\NormalTok{);breast_l}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 628 x 5
+   Activity Trait       Start                 Finish                Value       
+ * <chr>    <chr>       <chr>                 <chr>                 <chr>       
+ 1 Feeding  Left Breast 18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am  ""          
+ 2 Feeding  Left Breast 18-Feb.-2018 7:39 am  18-Feb.-2018 8:05 am  ""          
+ 3 Feeding  Left Breast 18-Feb.-2018 10:48 am 18-Feb.-2018 11:35 am ""          
+ 4 Feeding  Left Breast 18-Feb.-2018 4:17 pm  18-Feb.-2018 4:17 pm  ""          
+ 5 Feeding  Left Breast 18-Feb.-2018 4:20 pm  18-Feb.-2018 4:20 pm  ""          
+ 6 Feeding  Left Breast 18-Feb.-2018 5:32 pm  18-Feb.-2018 5:40 pm  ""          
+ 7 Feeding  Left Breast 18-Feb.-2018 9:04 pm  18-Feb.-2018 9:23 pm  ""          
+ 8 Feeding  Left Breast 18-Feb.-2018 10:56 pm 18-Feb.-2018 11:23 pm ""          
+ 9 Feeding  Left Breast 19-Feb.-2018 3:00 am  19-Feb.-2018 3:31 am  ""          
+10 Feeding  Left Breast 19-Feb.-2018 6:02 am  19-Feb.-2018 6:09 am  windy  tummy
+# ... with 618 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{breast_r <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(feed,}\DataTypeTok{subset=}\NormalTok{Trait}\OperatorTok{==}\StringTok{"Right Breast"}\NormalTok{);breast_r}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 608 x 5
+   Activity Trait        Start                 Finish                Value
+ * <chr>    <chr>        <chr>                 <chr>                 <chr>
+ 1 Feeding  Right Breast 18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am  ""   
+ 2 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am  ""   
+ 3 Feeding  Right Breast 18-Feb.-2018 10:12 am 18-Feb.-2018 10:45 am ""   
+ 4 Feeding  Right Breast 18-Feb.-2018 3:23 pm  18-Feb.-2018 3:56 pm  ""   
+ 5 Feeding  Right Breast 18-Feb.-2018 6:40 pm  18-Feb.-2018 6:52 pm  ""   
+ 6 Feeding  Right Breast 18-Feb.-2018 7:02 pm  18-Feb.-2018 7:30 pm  ""   
+ 7 Feeding  Right Breast 18-Feb.-2018 10:00 pm 18-Feb.-2018 10:08 pm ""   
+ 8 Feeding  Right Breast 18-Feb.-2018 11:37 pm 18-Feb.-2018 11:48 pm ""   
+ 9 Feeding  Right Breast 19-Feb.-2018 12:02 am 19-Feb.-2018 12:23 am ""   
+10 Feeding  Right Breast 19-Feb.-2018 3:54 am  19-Feb.-2018 4:19 am  ""   
+# ... with 598 more rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# }
+\end{Highlighting}
+\end{Shaded}
+
+\printbibliography
+
+\end{document}

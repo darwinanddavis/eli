@@ -2,9 +2,6 @@
 
 # TO DO
 # separate activity states
-# activity states with traits: grow,feed,diaper,leisure
-
-unique(data$Activity)
 # separate hour and mins, then convert time to hours 
 
 
@@ -23,11 +20,13 @@ unique(data$Activity)
 # drive_find(type = "folder")
 # drive_get("~/Data/eli/feb.csv")
 
-setwd("/Users/malishev/Documents/Data/Eli")
+setwd("/Users/malishev/Documents/Data/Eli") # set wd
 list.files()
+
 d <- "may" # choose month or total period
+
 data <- read.csv(paste0(d,".csv"),header=T,sep=",", stringsAsFactors=FALSE)
-colnames(data) <- c("Activity","Trait","Start","Finish","Measure")
+colnames(data) <- c("Activity","Trait","Start","Finish","Value")
 data[c("Activity", "Trait")] <- sapply(data[c("Activity", "Trait")],as.character)
 head(data) 
  
@@ -39,11 +38,13 @@ sleep <- subset(data,subset=Activity=="Sleep");sleep
 diaper <- subset(data,subset=Activity=="Diapering");diaper
 leisure <- subset(data,subset=Activity=="Leisure");leisure
 
-
 ### subset traits ###
-breast_l <- subset(feed,subset="Right Breast");breast_l
-breast_r
-head(data,100)
+# activity states with traits: grow,feed,diaper,leisure
+
+# feed
+breast_l <- subset(feed,subset=Trait=="Left Breast");breast_l
+breast_r <- subset(feed,subset=Trait=="Right Breast");breast_r
+
 
 # get time for each state by month, no need for day
 
