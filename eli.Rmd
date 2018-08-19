@@ -15,7 +15,7 @@ output:
     highlight: tango
     code_folding: hide
     toc: yes
-    toc_depth: 3
+    toc_depth: 4
     number_sections: no
     toc_float: yes
   pdf_document:
@@ -24,10 +24,10 @@ output:
     highlight: tango
     template: null
     toc: yes
-    toc_depth: 3
+    toc_depth: 4
     number_sections: false
-    fig_width: 4
-    fig_height: 5
+    fig_width: 5
+    fig_height: 4
     fig_caption: true
     df_print: tibble 
     citation_package: biblatex # natbib
@@ -104,7 +104,7 @@ Activity data for Eli for his first year, including time spent feeding, sleeping
 
 \  
 
-TO DO  
+**TO DO**  
 * ~~separate activity states~~  
 * separate hour and mins, then convert time to hours   
 
@@ -124,6 +124,65 @@ devtools::session_info()
 # drive_find(type = "folder")
 # drive_get("~/Data/eli/feb.csv")
 
+```
+
+### Install dependencies
+```{r, load packages, include=T, cache=T, message=F, warning=F, results='hide'}
+packages <- c("stringi","tidyr","sp","RColorBrewer","ggplot2","ggthemes")   
+if (require(packages)) {
+    install.packages(packages,dependencies = T)
+    require(packages)
+}
+lapply(packages,library,character.only=T)
+```
+### Set plotting function  
+```{r, eval=T, cache = TRUE, tidy = TRUE, lazy = TRUE, results="hide"}
+# plotting function (plot for MS or not, set bg color, set color palette from RColorBrewer, set alpha value for transperancy) 
+plot_it <- function(manuscript,bg,cp,alpha,family){ 
+  graphics.off()
+  if(manuscript==0){
+    if(bg=="black"){
+      colvec<-magma(200,1)
+      par(bg = colvec[1],col.axis="white",col.lab="white",col.main="white",
+          fg="white",bty="n",las=1,mar=c(5,6,4,2),family=family) #mono
+      border=adjustcolor("purple",alpha=0.5)
+    }else{
+      colvec<-bpy.colors(200)
+      par(bg = colvec[1],col.axis="white",col.lab="white",col.main="white",
+          fg="white",bty="n",las=1,mar=c(5,6,4,2),family=family) 
+      border=adjustcolor("blue",alpha=0.5)
+    }
+  }else{
+#    graphics.off()
+    par(bty="n",las=1,family=family) 
+  }
+  # color palettes
+  # ifelse(manuscript==1,colvec<-adjustcolor(brewer.pal(9,cp)[9], alpha = alpha),colvec <- adjustcolor(brewer.pal(9,cp)[5], alpha = alpha)) # fine tune plotting colors for plotting bg
+   # colfunc <<- colorRampPalette(brewer.pal(9,cp),alpha=alpha)
+  colfunc <<- adjustcolor(brewer.pal(9,cp),alpha=alpha) # USES <<- OPERATOR
+}
+```
+
+```{r, eval=T, cache = TRUE, tidy = TRUE, lazy = TRUE, results="hide"}
+# Setting ggplot theme graphics
+plot_it_gg <- function(bg){ # bg = colour to plot bg, family = font family
+  if(bg=="white"){
+    bg <- "white"
+    fg <- "black"
+  theme_tufte(base_family = "HersheySans") +
+    theme(panel.border = element_blank(),panel.grid.major = element_blank(),panel.grid.minor = element_blank(),panel.background = element_rect(fill = bg,colour = bg),plot.background = element_rect(fill=bg)) +
+    theme(axis.line = element_line(color = fg)) +theme(axis.ticks = element_line(color = fg)) + theme(plot.title = element_text(colour = fg)) +theme(axis.title.x = element_text(colour = fg), axis.title.y = element_text(colour = fg)) + theme(axis.text.x = element_text(color = fg),axis.text.y = element_text(color = fg)) + theme(legend.key = element_rect(fill = bg)) + theme(legend.title = element_text(colour=fg)) + theme(legend.text = element_text(colour=fg))
+}
+  }# end gg
+
+# define colours  
+col1 <- "light blue"
+col2 <- "orange"
+
+# Set global plotting parameters
+print("1/0, set colour, set colour palette 'display.brewer.all()',set alpha for col,set font")
+plot_it(0,"blue","YlOrRd",1,"HersheySans") # set col function params
+plot_it_gg("white") # same as above
 ```
 
 ### Load and clean data  
@@ -156,14 +215,32 @@ leisure <- subset(data,subset=Activity=="Leisure");head(leisure)
 # activity states with traits: grow,feed,diaper,leisure
 
 # grow
+head <- subset(grow,subset=Trait=="Head");head
+height <- subset(grow,subset=Trait=="Height");height
+weight <- subset(grow,subset=Trait=="Weight");weight  
 
 # feed
 breast_l <- subset(feed,subset=Trait=="Left Breast");head(breast_l)
 breast_r <- subset(feed,subset=Trait=="Right Breast");head(breast_r)
+bottle <- subset(feed,subset=Trait=="Bottle");head(bottle)
 
-# 
+# sleep
+# no traits
+
+# diaper
+pee <- subset(diaper,subset=Trait=="Pee");head(pee)
+poo <- subset(diaper,subset=Trait=="Poo");head(poo) 
+both <- subset(diaper,subset=Trait==unique(diaper$Trait)[1]);head(both) 
+
+# leisure  
+# no values
+unique(data$Activity)
+bath <- subset(leisure,subset=Trait=="Bath time");head(bath)
+tummy <- subset(leisure,subset=Trait=="Tummy time");head(tummy)
+outdoors <- subset(leisure,subset=Trait=="Outdoors");outdoors
+play <- subset(leisure,subset=Trait=="Play time");head(play)
 ```
-
+unique(data$Activity)
 ```{r echo=F, warnings=F, results="hide"}
 # get time for each state by month, no need for day
 
@@ -173,16 +250,24 @@ breast_r <- subset(feed,subset=Trait=="Right Breast");head(breast_r)
 ?substr
 ?strsplit 
 ?nchar
+?stri_sub # stringi package
 
 # separate into date, month, and time (by am and pm) cols. remove year. 
 #opt 1
-ss <- strsplit(data$Start, "-2018");ss
-ss <- lapply(ss, as.character);ss
-ss <- unlist(ss);ss
-ss <- strsplit(ss, "-");ss
-ss <- unlist(ss);ss
-ss <- lapply(ss, as.character);ss
+ss <- strsplit(data$Start, "-2018");head(ss)
+ss <- lapply(ss, as.character);head(ss)
+ss <- unlist(ss);head(ss)
+ss <- strsplit(ss, "-");head(ss)
+ss <- unlist(ss);head(ss)
+ss <- lapply(ss, as.character);head(ss)
 
+gsub("[^[:digit:]]", "", ss)[1] # get just numbers
+gsub("[[:digit:]]", "", ss)[1] # get just characters
+
+```
+
+
+```{r echo=F, warnings=F, results="hide"}
 #opt 2 # gsub replaces all instances
 ss <- gsub("-2018","",data$Start);head(ss)[1]
 ss <- gsub("-"," ",ss);head(ss)[1]
@@ -196,25 +281,24 @@ month <- month
 month.abb
 month.name
 ff <- substr(ss,0,6) ;ff[1] # separate first section before period 
-t <- substr(ss,9,99) ;t # separate second section after period 
-t <- gsub(" pm","",t);t # remove pm
-t <- gsub(" am","",t);t # remove am
+t <- substr(ss,9,99) ;head(t) # separate second section after period 
+t <- gsub(" pm","",t);head(t) # remove pm
+t <- gsub(" am","",t);head(t) # remove am
 # format(as.POSIXct((t) * 86400, origin = "1970-01-01", tz = "UTC"), "%H:%M") #convert to POSIX     
 
 # add time col to df after separating (only need time difference to get activity time per activity state for plots)   
 # add zero to hour
-hour <- substr(t,1,2);hour# create hour col
-min <- substr(t,3,99);min# create min col
+hour <- substr(t,1,2);hour[1]# create hour col
+min <- substr(t,3,99);min[1]# create min col
 
 #opt 4
 ss <- sub("-2018","",data$Start);ss[1]
-ss <- sub("-","/",ss);ss
+ss <- sub("-","/",ss);head(ss)
 # as.POSIXct(ss,tz="UTC+5") # convert to posix
 
 ?strptime
 z <- as.difftime(c("3:20", "23:15"), format = "%H:%M") # 3rd gives NA
 as.numeric(z, units = "mins")
-?difftime
 
 class(strsplit(data$Start, "-")[[101]]) # this is a character vec
 
@@ -223,9 +307,123 @@ class(strsplit(data$Start, "-")[[101]]) # this is a character vec
 # data$Month[nchar(data$Month)==1]<-paste(0,data$Month[nchar(data$Month)==1],sep="")
 
 #potential to separate by am and pm
-strsplit(data$Start, "p")
+ap <- strsplit(data$Start, "p"); head(ap)
 ```
 
+### Growth  
+
+#### Head  
+```{r}
+require("stringi")
+require("tidyr")
+hv <- gsub("[^[:digit:]]", "", head$Value) # get just integers
+stri_sub(hv,3) <- ".";hv # insert the decimal point in the correct place
+head$Value <- hv %>% as.numeric() # make numeric
+
+par(las=1,bty="n")
+ylim <- round(max(head$Value,10))
+with(head,plot(Value,
+                 col=col1,type="b",lwd=3,
+                 ylim=c(0,ylim),
+                 xlab="",ylab=""
+))
+axis(1,xlab=month.name[length(head$Value)])
+title("Head circumference (cm)")
+
+```
+
+#### Weight  
+```{r}
+wv <- gsub("[^[:digit:]]", "", weight$Value) # get just integers
+stri_sub(wv,2) <- "." # insert the decimal point in the correct place
+weight$Value <- wv %>% as.numeric() # make numeric
+
+par(las=1,bty="n")
+ylim <- round(max(weight$Value,10))
+with(weight,plot(Value,
+                 col="pink",type="b",lwd=3,
+                 ylim=c(0,ylim)
+))
+axis(1,xlab=month.name[length(head$Value)])
+title("Weight (g)")
+
+```
+
+#### Height   
+```{r}
+hhv <- gsub("[^[:digit:]]", "", height$Value) # get just integers
+stri_sub(hhv,3) <- "." ;hhv # insert the decimal point in the correct place
+height$Value <- hhv %>% as.numeric() # make numeric
+
+par(las=1,bty="n")
+with(height,plot(Value,
+                 col="pink",type="b",lwd=3,
+                 ylim=c(0,70)
+))
+# axis(1,xlab=month.name[length(head$Value)])
+title("Height (cm)")
+
+```
+
+### Feeding  
+
+#### Left breast    
+```{r}
+
+```
+
+#### Right breast    
+```{r}
+
+```
+
+
+### Diaper  
+```{r}
+unique(diaper$Trait)
+```
+
+#### Pee  
+```{r}
+unique(diaper$Trait)
+```
+
+#### Poo  
+```{r}
+unique(diaper$Trait)
+```
+
+#### Both  
+```{r}
+unique(diaper$Trait)
+```
+
+### Leisure  
+```{r}
+
+```
+
+#### Bath
+```{r}
+
+```
+
+#### Tummy  
+```{r}
+
+```
+
+#### Outdoors  
+```{r}
+
+```
+
+#### Play  
+```{r}
+
+```
+
+### Lab  
 ```{r echo=F, eval=F, results="hide", warning=F}
 #### Lab  
 micro_shd<-subset(micro_shd_all, format(as.POSIXlt(micro_shd_all$dates), "%y/%m/%d")>=daystart & format(as.POSIXlt(micro_shd_all$dates), "%y/%m/%d")<=dayfin)
