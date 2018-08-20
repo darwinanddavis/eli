@@ -316,52 +316,78 @@ ap <- strsplit(data$Start, "p"); head(ap)
 ```{r}
 require("stringi")
 require("tidyr")
+
+d <- head
+plot_it(0,"blue","Blues",0.5,"HersheySans")
 hv <- gsub("[^[:digit:]]", "", head$Value) # get just integers
-stri_sub(hv,3) <- ".";hv # insert the decimal point in the correct place
+stri_sub(hv,3,1) <- ".";hv # insert the decimal point in the correct place
 head$Value <- hv %>% as.numeric() # make numeric
 
 par(las=1,bty="n")
-ylim <- round(max(head$Value,10))
-with(head,plot(Value,
-                 col=col1,type="b",lwd=3,
-                 ylim=c(0,ylim),
-                 xlab="",ylab=""
+ylim <- round(max(d$Value,10))
+with(d,plot(Value,
+            col=col,
+            type="b",lwd=3,
+            pch=20,
+            ylim=c(0,ylim),
+            xlab="",ylab="",xaxt="n"
 ))
-axis(1,xlab=month.name[length(head$Value)])
+axis(1,at=1:4,labels=month.abb[2:5])
 title("Head circumference (cm)")
 
 ```
 
-#### Weight  
+#### Weight   
 ```{r}
+require(RColorBrewer)
+require(sp)
+
+d <- weight
+plot_it(0,"blue","Blues",0.5,"HersheySans")
 wv <- gsub("[^[:digit:]]", "", weight$Value) # get just integers
-stri_sub(wv,2) <- "." # insert the decimal point in the correct place
+stri_sub(wv,2,1) <- "." # insert the decimal point in the correct place
 weight$Value <- wv %>% as.numeric() # make numeric
 
 par(las=1,bty="n")
 ylim <- round(max(weight$Value,10))
-with(weight,plot(Value,
-                 col="pink",type="b",lwd=3,
-                 ylim=c(0,ylim)
+with(d,plot(Value,
+            col=col,
+            type="b",lwd=3,
+            pch=20,
+            ylim=c(0,ylim),
+            ylab="Weight (kg)",
+            xlab="Time",
+            xaxt="n"
 ))
-axis(1,xlab=month.name[length(head$Value)])
-title("Weight (g)")
-
+axis(1,at=1:8,labels=rep(month.abb[2:5],each=2))
+title("Eli weight (kg) over time")
+?par
 ```
-
-#### Height   
+weight
+#### Height  
 ```{r}
+require(RColorBrewer)
+require(sp)
+
+d <- height
+plot_it(0,"blue","Blues",0.5,"HersheySans")
 hhv <- gsub("[^[:digit:]]", "", height$Value) # get just integers
-stri_sub(hhv,3) <- "." ;hhv # insert the decimal point in the correct place
+stri_sub(hhv,3,1) <- "." ;hhv # insert the decimal point in the correct place
 height$Value <- hhv %>% as.numeric() # make numeric
 
 par(las=1,bty="n")
-with(height,plot(Value,
-                 col="pink",type="b",lwd=3,
-                 ylim=c(0,70)
+with(d,plot(Value,
+            col=col1,
+            pch=20,
+            type="b",lwd=3,
+            ylim=c(0,70),
+            ylab="Height (cm)",
+            xlab="",
+            xaxt="n"
 ))
-# axis(1,xlab=month.name[length(head$Value)])
-title("Height (cm)")
+axis(1,at=1:4,labels=month.abb[2:5])
+# axis(1,at=c(0,length(d$Value)),labels=c("",""))# bookending axis tick marks
+title("Eli height (cm) over time")
 
 ```
 
