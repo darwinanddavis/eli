@@ -18,6 +18,12 @@ output:
     toc_depth: 4
     number_sections: no
     toc_float: yes
+  word_document:
+    highlight: tango
+    keep_md: yes
+    pandoc_args: --smart
+    #reference: mystyles.docx
+    toc: yes
   pdf_document:
     includes:
       in_header: # add .tex file with header content
@@ -33,12 +39,6 @@ output:
     citation_package: biblatex # natbib
     latex_engine: xelatex #pdflatex # lualatex
     keep_tex: true # keep .tex file in dir 
-  word_document:
-    highlight: tango
-    keep_md: yes
-    pandoc_args: --smart
-    #reference: mystyles.docx
-    toc: yes
 inludes:
   before_body: 
 subtitle: 
@@ -198,6 +198,17 @@ colnames(data) <- c("Activity","Trait","Start","Finish","Value")
 data[c("Activity", "Trait")] <- sapply(data[c("Activity", "Trait")],as.character)
 head(data) 
 
+# load june july aug + data
+# skip first three redundant rows
+dd <- "junejulyaug"
+data2 <- read.csv(paste0(dd,".csv"),header=T,sep=",", stringsAsFactors=FALSE,skip=3)
+colnames(data2) <- c("Activity","Trait","Start","Finish","Value")
+data2[c("Activity", "Trait")] <- sapply(data2[c("Activity", "Trait")],as.character)
+str(data2) 
+
+# add june july aug + data to existing data frame
+data <- rbind(data,data2)
+
 ```
 
 ### Subset activities  
@@ -215,32 +226,36 @@ leisure <- subset(data,subset=Activity=="Leisure");head(leisure)
 # activity states with traits: grow,feed,diaper,leisure
 
 # grow
+grow <- within(grow, rm("Finish")) # only time stamp, so remove Finish time col
 head <- subset(grow,subset=Trait=="Head");head
 height <- subset(grow,subset=Trait=="Height");height
 weight <- subset(grow,subset=Trait=="Weight");weight  
 
 # feed
+feed <- within(feed,rm("Value")) # no values, so remove Values col
 breast_l <- subset(feed,subset=Trait=="Left Breast");head(breast_l)
 breast_r <- subset(feed,subset=Trait=="Right Breast");head(breast_r)
 bottle <- subset(feed,subset=Trait=="Bottle");head(bottle)
 
-# sleep
-# no traits
-
 # diaper
+diaper <- within(diaper, rm("Finish")) # only time stamp, so remove Finish time col
 pee <- subset(diaper,subset=Trait=="Pee");head(pee)
 poo <- subset(diaper,subset=Trait=="Poo");head(poo) 
 both <- subset(diaper,subset=Trait==unique(diaper$Trait)[1]);head(both) 
 
 # leisure  
-# no values
-unique(data$Activity)
+leisure <- within(leisure, rm("Value")) # no values, so remove Values col
 bath <- subset(leisure,subset=Trait=="Bath time");head(bath)
 tummy <- subset(leisure,subset=Trait=="Tummy time");head(tummy)
 outdoors <- subset(leisure,subset=Trait=="Outdoors");outdoors
 play <- subset(leisure,subset=Trait=="Play time");head(play)
+
+# sleep
+sleep <- within(sleep,rm("Value")) # no values, so remove Values col
+sleep <- within(sleep,rm("Trait")) # no Traits, so remove Traits col
+
 ```
-unique(data$Activity)
+
 ```{r echo=F, warnings=F, results="hide"}
 # get time for each state by month, no need for day
 
@@ -311,30 +326,35 @@ ap <- strsplit(data$Start, "p"); head(ap)
 ```
 
 ### Growth  
+No time period, just values  
 
 #### Head  
 ```{r}
 require("stringi")
 require("tidyr")
+require("sp")
+require("RColorBrewer")
 
-d <- head
 plot_it(0,"blue","Blues",0.5,"HersheySans")
 hv <- gsub("[^[:digit:]]", "", head$Value) # get just integers
 stri_sub(hv,3,1) <- ".";hv # insert the decimal point in the correct place
 head$Value <- hv %>% as.numeric() # make numeric
 
+d <- head
 par(las=1,bty="n")
 ylim <- round(max(d$Value,10))
 with(d,plot(Value,
-            col=col,
+            col=col1,
             type="b",lwd=3,
             pch=20,
             ylim=c(0,ylim),
-            xlab="",ylab="",xaxt="n"
+            ylab="Head circumference (cm)",
+            xlab="Time",
+            xaxt="n"
 ))
 axis(1,at=1:4,labels=month.abb[2:5])
+# started solids July 2 abline()
 title("Head circumference (cm)")
-
 ```
 
 #### Weight   
@@ -342,16 +362,17 @@ title("Head circumference (cm)")
 require(RColorBrewer)
 require(sp)
 
-d <- weight
 plot_it(0,"blue","Blues",0.5,"HersheySans")
 wv <- gsub("[^[:digit:]]", "", weight$Value) # get just integers
-stri_sub(wv,2,1) <- "." # insert the decimal point in the correct place
+stri_sub(wv,2,1) <- ".";wv # insert the decimal point in the correct place
 weight$Value <- wv %>% as.numeric() # make numeric
 
+d <- weight
 par(las=1,bty="n")
+xlim <- length(weight$Value)
 ylim <- round(max(weight$Value,10))
 with(d,plot(Value,
-            col=col,
+            col=col1,
             type="b",lwd=3,
             pch=20,
             ylim=c(0,ylim),
@@ -359,22 +380,22 @@ with(d,plot(Value,
             xlab="Time",
             xaxt="n"
 ))
-axis(1,at=1:8,labels=rep(month.abb[2:5],each=2))
-title("Eli weight (kg) over time")
-?par
+# axis(1,at=1:xlim,labels=rep(month.abb[2:(xlim/2)],each=2))
+# started solids July 2 abline()
+title("Weight (kg) over time")
 ```
-weight
+
 #### Height  
 ```{r}
 require(RColorBrewer)
 require(sp)
 
-d <- height
 plot_it(0,"blue","Blues",0.5,"HersheySans")
 hhv <- gsub("[^[:digit:]]", "", height$Value) # get just integers
 stri_sub(hhv,3,1) <- "." ;hhv # insert the decimal point in the correct place
 height$Value <- hhv %>% as.numeric() # make numeric
 
+d <- height
 par(las=1,bty="n")
 with(d,plot(Value,
             col=col1,
@@ -382,71 +403,101 @@ with(d,plot(Value,
             type="b",lwd=3,
             ylim=c(0,70),
             ylab="Height (cm)",
-            xlab="",
+            xlab="Time",
             xaxt="n"
 ))
 axis(1,at=1:4,labels=month.abb[2:5])
 # axis(1,at=c(0,length(d$Value)),labels=c("",""))# bookending axis tick marks
-title("Eli height (cm) over time")
+# started solids July 2 abline()
+title("Height (cm) over time")
 
 ```
 
 ### Feeding  
+Only time period, no values 
+Started solids July 2      
 
-#### Left breast    
+#### Left breast  
+Only time period, no values    
 ```{r}
-
+# started solids July 2    
+head(breast_l)
 ```
 
-#### Right breast    
+#### Right breast  
+Only time period, no values      
 ```{r}
-
+# started solids July 2    
+head(breast_r)
 ```
 
 
 ### Diaper  
+Only time stamp (count)  
+Started solids July 2    
 ```{r}
+# started solids july 2  
 unique(diaper$Trait)
 ```
 
 #### Pee  
+Only time stamp (count)  
 ```{r}
-unique(diaper$Trait)
+# started solids july 2  
+which(pee$Start!=pee$Finish) # are there any time periods > 1?
+nrow(pee)
 ```
 
 #### Poo  
+Only time stamp (count)  
 ```{r}
-unique(diaper$Trait)
+# started solids july 2  
+which(poo$Start!=poo$Finish) # are there any time periods > 1?
+nrow(poo)
 ```
 
-#### Both  
+#### Both    
+Only time stamp (count)  
 ```{r}
-unique(diaper$Trait)
+# started solids july 2  
+which(both$Start!=both$Finish) # are there any time periods > 1?
+nrow(both)
 ```
 
 ### Leisure  
+Only time period, no values  
 ```{r}
 
 ```
 
 #### Bath
+Only time period, no values  
 ```{r}
 
 ```
 
 #### Tummy  
+Only time period, no values  
 ```{r}
 
 ```
 
-#### Outdoors  
+#### Outdoors
+Only time period, no values  
 ```{r}
 
 ```
 
 #### Play  
+Only time period, no values  
 ```{r}
 
+```
+
+### Sleep  
+No values, just time period  
+```{r}
+head(sleep) 
 ```
 
 ### Lab  

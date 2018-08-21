@@ -74,15 +74,6 @@
 \newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
 \newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
 \newcommand{\NormalTok}[1]{#1}
-\usepackage{graphicx,grffile}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 \usepackage[normalem]{ulem}
 % avoid problems with \sout in headers with hyperref:
 \pdfstringdefDisableCommands{\renewcommand{\sout}{}}
@@ -128,7 +119,7 @@ Clifton Road NE, Atlanta, GA, USA, 30322}}
 }
 ~
 
-Date: 2018-08-18\\
+Date: 2018-08-21\\
 R version: 3.5.0\\
 *Corresponding author:
 \href{mailto:matthew.malishev@gmail.com}{\nolinkurl{matthew.malishev@gmail.com}}\\
@@ -226,8 +217,10 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
- [1] "april.csv" "eli_cache" "eli_files" "eli.html"  "eli.pdf"   "eli.R"     "eli.Rmd"   "Eli.Rproj"
- [9] "eli.tex"   "feb.csv"   "march.csv" "may.csv"  
+ [1] "april.csv"       "eli_cache"       "eli_files"       "eli_weight.mp4"  "eli.docx"       
+ [6] "eli.html"        "eli.md"          "eli.pdf"         "eli.R"           "eli.Rmd"        
+[11] "Eli.Rproj"       "eli.tex"         "feb.csv"         "junejulyaug.csv" "march.csv"      
+[16] "may.csv"         "Notes.csv"      
 \end{verbatim}
 
 \begin{Shaded}
@@ -252,6 +245,34 @@ sleeping, in leisure and values for growth and other behavoural traits.
 5 Feeding  Left Breast  18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am  ""    
 6 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am  ""    
 \end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# load june july aug + data}
+\CommentTok{# skip first three redundant rows}
+\NormalTok{dd <-}\StringTok{ "junejulyaug"}
+\NormalTok{data2 <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(dd,}\StringTok{".csv"}\NormalTok{),}\DataTypeTok{header=}\NormalTok{T,}\DataTypeTok{sep=}\StringTok{","}\NormalTok{, }\DataTypeTok{stringsAsFactors=}\OtherTok{FALSE}\NormalTok{,}\DataTypeTok{skip=}\DecValTok{3}\NormalTok{)}
+\KeywordTok{colnames}\NormalTok{(data2) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{,}\StringTok{"Trait"}\NormalTok{,}\StringTok{"Start"}\NormalTok{,}\StringTok{"Finish"}\NormalTok{,}\StringTok{"Value"}\NormalTok{)}
+\NormalTok{data2[}\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{, }\StringTok{"Trait"}\NormalTok{)] <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(data2[}\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{, }\StringTok{"Trait"}\NormalTok{)],as.character)}
+\KeywordTok{str}\NormalTok{(data2) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+'data.frame':   1330 obs. of  5 variables:
+ $ Activity: chr  "Health" "Sleep" "Feeding" "Diapering" ...
+ $ Trait   : chr  "Vaccination" "" "Right Breast" "Pee" ...
+ $ Start   : chr  "19-Jun.-2018 10:10 am" "27-Jun.-2018 12:05 am" "27-Jun.-2018 9:31 am" "27-Jun.-2018 9:44 am" ...
+ $ Finish  : chr  "19-Jun.-2018 10:10 am" "27-Jun.-2018 9:32 am" "27-Jun.-2018 9:40 am" "27-Jun.-2018 9:44 am" ...
+ $ Value   : chr  "4mnth immunizations" "" "" "" ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# add june july aug + data to existing data frame}
+\NormalTok{data <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(data,data2)}
+\end{Highlighting}
+\end{Shaded}
 
 \subsubsection{Subset activities}\label{subset-activities}
 
@@ -362,17 +383,18 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \CommentTok{# activity states with traits: grow,feed,diaper,leisure}
 
 \CommentTok{# grow}
+\NormalTok{grow <-}\StringTok{ }\KeywordTok{within}\NormalTok{(grow, }\KeywordTok{rm}\NormalTok{(}\StringTok{"Finish"}\NormalTok{)) }\CommentTok{# only time stamp, so remove Finish time col}
 \NormalTok{head <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(grow,}\DataTypeTok{subset=}\NormalTok{Trait}\OperatorTok{==}\StringTok{"Head"}\NormalTok{);head}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 3 x 5
-  Activity Trait Start                 Finish                Value 
-* <chr>    <chr> <chr>                 <chr>                 <chr> 
-1 Growth   Head  16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  35cm  
-2 Growth   Head  07-Mar.-2018 1:08 pm  07-Mar.-2018 1:08 pm  37.5cm
-3 Growth   Head  24-Apr.-2018 10:16 pm 24-Apr.-2018 10:16 pm 40cm  
+# A tibble: 3 x 4
+  Activity Trait Start                 Value 
+* <chr>    <chr> <chr>                 <chr> 
+1 Growth   Head  16-Feb.-2018 8:06 pm  35cm  
+2 Growth   Head  07-Mar.-2018 1:08 pm  37.5cm
+3 Growth   Head  24-Apr.-2018 10:16 pm 40cm  
 \end{verbatim}
 
 \begin{Shaded}
@@ -382,13 +404,13 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 4 x 5
-  Activity Trait  Start                 Finish                Value 
-* <chr>    <chr>  <chr>                 <chr>                 <chr> 
-1 Growth   Height 16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  53cm  
-2 Growth   Height 07-Mar.-2018 1:08 pm  07-Mar.-2018 1:08 pm  55cm  
-3 Growth   Height 24-Apr.-2018 10:15 pm 24-Apr.-2018 10:15 pm 61.5cm
-4 Growth   Height 23/05/18 20:20        23/05/18 20:20        63cm  
+# A tibble: 4 x 4
+  Activity Trait  Start                 Value 
+* <chr>    <chr>  <chr>                 <chr> 
+1 Growth   Height 16-Feb.-2018 8:06 pm  53cm  
+2 Growth   Height 07-Mar.-2018 1:08 pm  55cm  
+3 Growth   Height 24-Apr.-2018 10:15 pm 61.5cm
+4 Growth   Height 23/05/18 20:20        63cm  
 \end{verbatim}
 
 \begin{Shaded}
@@ -398,37 +420,39 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 9 x 5
-  Activity Trait  Start                 Finish                Value               
-* <chr>    <chr>  <chr>                 <chr>                 <chr>               
-1 Growth   Weight 16-Feb.-2018 11:59 pm 16-Feb.-2018 11:59 pm 3.61kg              
-2 Growth   Weight 27-Feb.-2018 12:00 pm 27-Feb.-2018 12:00 pm 3.67kg              
-3 Growth   Weight 07-Mar.-2018 1:08 pm  07-Mar.-2018 1:08 pm  4.01kg              
-4 Growth   Weight 21-Mar.-2018 10:45 am 21-Mar.-2018 10:45 am 4.695kg             
-5 Growth   Weight 28-Mar.-2018 6:09 pm  28-Mar.-2018 6:09 pm  5.1kg               
-6 Growth   Weight 11-Apr.-2018 11:12 am 11-Apr.-2018 11:12 am 5.5kg               
-7 Growth   Weight 16-Apr.-2018 2:28 pm  16-Apr.-2018 2:28 pm  5.5kg, @ babybunting
-8 Growth   Weight 24-Apr.-2018 10:14 pm 24-Apr.-2018 10:14 pm 5.73kg              
-9 Growth   Weight 10/05/18 12:14        10/05/18 12:14        6kg                 
+# A tibble: 10 x 4
+   Activity Trait  Start                 Value               
+ * <chr>    <chr>  <chr>                 <chr>               
+ 1 Growth   Weight 16-Feb.-2018 11:59 pm 3.61kg              
+ 2 Growth   Weight 27-Feb.-2018 12:00 pm 3.67kg              
+ 3 Growth   Weight 07-Mar.-2018 1:08 pm  4.01kg              
+ 4 Growth   Weight 21-Mar.-2018 10:45 am 4.695kg             
+ 5 Growth   Weight 28-Mar.-2018 6:09 pm  5.1kg               
+ 6 Growth   Weight 11-Apr.-2018 11:12 am 5.5kg               
+ 7 Growth   Weight 16-Apr.-2018 2:28 pm  5.5kg, @ babybunting
+ 8 Growth   Weight 24-Apr.-2018 10:14 pm 5.73kg              
+ 9 Growth   Weight 10/05/18 12:14        6kg                 
+10 Growth   Weight 02-Jul.-2018 1:10 pm  6.6kg               
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# feed}
+\NormalTok{feed <-}\StringTok{ }\KeywordTok{within}\NormalTok{(feed,}\KeywordTok{rm}\NormalTok{(}\StringTok{"Value"}\NormalTok{)) }\CommentTok{# no values, so remove Values col}
 \NormalTok{breast_l <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(feed,}\DataTypeTok{subset=}\NormalTok{Trait}\OperatorTok{==}\StringTok{"Left Breast"}\NormalTok{);}\KeywordTok{head}\NormalTok{(breast_l)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity Trait       Start                 Finish                Value
-* <chr>    <chr>       <chr>                 <chr>                 <chr>
-1 Feeding  Left Breast 18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am  ""   
-2 Feeding  Left Breast 18-Feb.-2018 7:39 am  18-Feb.-2018 8:05 am  ""   
-3 Feeding  Left Breast 18-Feb.-2018 10:48 am 18-Feb.-2018 11:35 am ""   
-4 Feeding  Left Breast 18-Feb.-2018 4:17 pm  18-Feb.-2018 4:17 pm  ""   
-5 Feeding  Left Breast 18-Feb.-2018 4:20 pm  18-Feb.-2018 4:20 pm  ""   
-6 Feeding  Left Breast 18-Feb.-2018 5:32 pm  18-Feb.-2018 5:40 pm  ""   
+# A tibble: 6 x 4
+  Activity Trait       Start                 Finish               
+* <chr>    <chr>       <chr>                 <chr>                
+1 Feeding  Left Breast 18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am 
+2 Feeding  Left Breast 18-Feb.-2018 7:39 am  18-Feb.-2018 8:05 am 
+3 Feeding  Left Breast 18-Feb.-2018 10:48 am 18-Feb.-2018 11:35 am
+4 Feeding  Left Breast 18-Feb.-2018 4:17 pm  18-Feb.-2018 4:17 pm 
+5 Feeding  Left Breast 18-Feb.-2018 4:20 pm  18-Feb.-2018 4:20 pm 
+6 Feeding  Left Breast 18-Feb.-2018 5:32 pm  18-Feb.-2018 5:40 pm 
 \end{verbatim}
 
 \begin{Shaded}
@@ -438,15 +462,15 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity Trait        Start                 Finish                Value
-* <chr>    <chr>        <chr>                 <chr>                 <chr>
-1 Feeding  Right Breast 18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am  ""   
-2 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am  ""   
-3 Feeding  Right Breast 18-Feb.-2018 10:12 am 18-Feb.-2018 10:45 am ""   
-4 Feeding  Right Breast 18-Feb.-2018 3:23 pm  18-Feb.-2018 3:56 pm  ""   
-5 Feeding  Right Breast 18-Feb.-2018 6:40 pm  18-Feb.-2018 6:52 pm  ""   
-6 Feeding  Right Breast 18-Feb.-2018 7:02 pm  18-Feb.-2018 7:30 pm  ""   
+# A tibble: 6 x 4
+  Activity Trait        Start                 Finish               
+* <chr>    <chr>        <chr>                 <chr>                
+1 Feeding  Right Breast 18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am 
+2 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am 
+3 Feeding  Right Breast 18-Feb.-2018 10:12 am 18-Feb.-2018 10:45 am
+4 Feeding  Right Breast 18-Feb.-2018 3:23 pm  18-Feb.-2018 3:56 pm 
+5 Feeding  Right Breast 18-Feb.-2018 6:40 pm  18-Feb.-2018 6:52 pm 
+6 Feeding  Right Breast 18-Feb.-2018 7:02 pm  18-Feb.-2018 7:30 pm 
 \end{verbatim}
 
 \begin{Shaded}
@@ -456,36 +480,35 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 5 x 5
-  Activity Trait  Start                 Finish                Value                          
-* <chr>    <chr>  <chr>                 <chr>                 <chr>                          
-1 Feeding  Bottle 12-Mar.-2018 11:12 am 12-Mar.-2018 11:22 am 70ml, breast milk, expresd -L/B
-2 Feeding  Bottle 19-Apr.-2018 1:10 pm  19-Apr.-2018 1:12 pm  30ml, breast milk              
-3 Feeding  Bottle 19-Apr.-2018 9:35 pm  19-Apr.-2018 9:42 pm  90ml, breast milk              
-4 Feeding  Bottle 21/05/18 11:47        21/05/18 11:55        30ml, breast milk              
-5 Feeding  Bottle 25/05/18 19:12        25/05/18 19:21        125ml, breast milk             
+# A tibble: 6 x 4
+  Activity Trait  Start                 Finish               
+* <chr>    <chr>  <chr>                 <chr>                
+1 Feeding  Bottle 12-Mar.-2018 11:12 am 12-Mar.-2018 11:22 am
+2 Feeding  Bottle 19-Apr.-2018 1:10 pm  19-Apr.-2018 1:12 pm 
+3 Feeding  Bottle 19-Apr.-2018 9:35 pm  19-Apr.-2018 9:42 pm 
+4 Feeding  Bottle 21/05/18 11:47        21/05/18 11:55       
+5 Feeding  Bottle 25/05/18 19:12        25/05/18 19:21       
+6 Feeding  Bottle 08-Aug.-2018 12:09 pm 08-Aug.-2018 12:09 pm
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# sleep}
-\CommentTok{# no traits}
-
 \CommentTok{# diaper}
+\NormalTok{diaper <-}\StringTok{ }\KeywordTok{within}\NormalTok{(diaper, }\KeywordTok{rm}\NormalTok{(}\StringTok{"Finish"}\NormalTok{)) }\CommentTok{# only time stamp, so remove Finish time col}
 \NormalTok{pee <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(diaper,}\DataTypeTok{subset=}\NormalTok{Trait}\OperatorTok{==}\StringTok{"Pee"}\NormalTok{);}\KeywordTok{head}\NormalTok{(pee)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity  Trait Start                 Finish                Value
-* <chr>     <chr> <chr>                 <chr>                 <chr>
-1 Diapering Pee   20-Feb.-2018 2:46 am  20-Feb.-2018 2:46 am  ""   
-2 Diapering Pee   20-Feb.-2018 11:20 am 20-Feb.-2018 11:20 am ""   
-3 Diapering Pee   20-Feb.-2018 4:29 pm  20-Feb.-2018 4:29 pm  ""   
-4 Diapering Pee   20-Feb.-2018 7:09 pm  20-Feb.-2018 7:09 pm  ""   
-5 Diapering Pee   20-Feb.-2018 8:30 pm  20-Feb.-2018 8:30 pm  ""   
-6 Diapering Pee   21-Feb.-2018 2:29 am  21-Feb.-2018 2:29 am  ""   
+# A tibble: 6 x 4
+  Activity  Trait Start                 Value
+* <chr>     <chr> <chr>                 <chr>
+1 Diapering Pee   20-Feb.-2018 2:46 am  ""   
+2 Diapering Pee   20-Feb.-2018 11:20 am ""   
+3 Diapering Pee   20-Feb.-2018 4:29 pm  ""   
+4 Diapering Pee   20-Feb.-2018 7:09 pm  ""   
+5 Diapering Pee   20-Feb.-2018 8:30 pm  ""   
+6 Diapering Pee   21-Feb.-2018 2:29 am  ""   
 \end{verbatim}
 
 \begin{Shaded}
@@ -495,15 +518,15 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity  Trait Start                 Finish                Value                          
-* <chr>     <chr> <chr>                 <chr>                 <chr>                          
-1 Diapering Poo   18-Feb.-2018 6:42 pm  18-Feb.-2018 6:42 pm  licorice, shiny                
-2 Diapering Poo   18-Feb.-2018 10:00 pm 18-Feb.-2018 10:00 pm small like earlier, olive green
-3 Diapering Poo   20-Feb.-2018 2:47 am  20-Feb.-2018 2:47 am  Fresh. Olive/brown             
-4 Diapering Poo   20-Feb.-2018 4:31 pm  20-Feb.-2018 4:31 pm  ""                             
-5 Diapering Poo   21-Feb.-2018 12:45 am 21-Feb.-2018 12:45 am ""                             
-6 Diapering Poo   21-Feb.-2018 1:51 pm  21-Feb.-2018 1:51 pm  ""                             
+# A tibble: 6 x 4
+  Activity  Trait Start                 Value                          
+* <chr>     <chr> <chr>                 <chr>                          
+1 Diapering Poo   18-Feb.-2018 6:42 pm  licorice, shiny                
+2 Diapering Poo   18-Feb.-2018 10:00 pm small like earlier, olive green
+3 Diapering Poo   20-Feb.-2018 2:47 am  Fresh. Olive/brown             
+4 Diapering Poo   20-Feb.-2018 4:31 pm  ""                             
+5 Diapering Poo   21-Feb.-2018 12:45 am ""                             
+6 Diapering Poo   21-Feb.-2018 1:51 pm  ""                             
 \end{verbatim}
 
 \begin{Shaded}
@@ -513,45 +536,35 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity  Trait     Start                 Finish                Value
-* <chr>     <chr>     <chr>                 <chr>                 <chr>
-1 Diapering Pee & Poo 18-Feb.-2018 10:01 am 18-Feb.-2018 10:01 am olive
-2 Diapering Pee & Poo 20-Feb.-2018 3:54 am  20-Feb.-2018 3:54 am  ""   
-3 Diapering Pee & Poo 20-Feb.-2018 11:42 pm 20-Feb.-2018 11:42 pm ""   
-4 Diapering Pee & Poo 21-Feb.-2018 4:53 am  21-Feb.-2018 4:53 am  ""   
-5 Diapering Pee & Poo 22-Feb.-2018 10:20 pm 22-Feb.-2018 10:20 pm ""   
-6 Diapering Pee & Poo 23-Feb.-2018 4:55 am  23-Feb.-2018 4:55 am  ""   
+# A tibble: 6 x 4
+  Activity  Trait     Start                 Value
+* <chr>     <chr>     <chr>                 <chr>
+1 Diapering Pee & Poo 18-Feb.-2018 10:01 am olive
+2 Diapering Pee & Poo 20-Feb.-2018 3:54 am  ""   
+3 Diapering Pee & Poo 20-Feb.-2018 11:42 pm ""   
+4 Diapering Pee & Poo 21-Feb.-2018 4:53 am  ""   
+5 Diapering Pee & Poo 22-Feb.-2018 10:20 pm ""   
+6 Diapering Pee & Poo 23-Feb.-2018 4:55 am  ""   
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# leisure  }
-\CommentTok{# no values}
-\KeywordTok{unique}\NormalTok{(data}\OperatorTok{$}\NormalTok{Activity)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-[1] "Growth"    "Feeding"   "Sleep"     "Diapering" "Health"    "Leisure"   "Pumping"  
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
+\NormalTok{leisure <-}\StringTok{ }\KeywordTok{within}\NormalTok{(leisure, }\KeywordTok{rm}\NormalTok{(}\StringTok{"Value"}\NormalTok{)) }\CommentTok{# no values, so remove Values col}
 \NormalTok{bath <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(leisure,}\DataTypeTok{subset=}\NormalTok{Trait}\OperatorTok{==}\StringTok{"Bath time"}\NormalTok{);}\KeywordTok{head}\NormalTok{(bath)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity Trait     Start                 Finish                Value
-* <chr>    <chr>     <chr>                 <chr>                 <chr>
-1 Leisure  Bath time 13-Mar.-2018 10:15 pm 13-Mar.-2018 10:30 pm ""   
-2 Leisure  Bath time 15-Mar.-2018 9:15 pm  15-Mar.-2018 9:30 pm  ""   
-3 Leisure  Bath time 17-Mar.-2018 9:10 pm  17-Mar.-2018 9:30 pm  ""   
-4 Leisure  Bath time 22-Mar.-2018 11:05 pm 22-Mar.-2018 11:29 pm ""   
-5 Leisure  Bath time 24-Mar.-2018 9:10 pm  24-Mar.-2018 9:34 pm  ""   
-6 Leisure  Bath time 27-Mar.-2018 9:10 pm  27-Mar.-2018 9:30 pm  ""   
+# A tibble: 6 x 4
+  Activity Trait     Start                 Finish               
+* <chr>    <chr>     <chr>                 <chr>                
+1 Leisure  Bath time 13-Mar.-2018 10:15 pm 13-Mar.-2018 10:30 pm
+2 Leisure  Bath time 15-Mar.-2018 9:15 pm  15-Mar.-2018 9:30 pm 
+3 Leisure  Bath time 17-Mar.-2018 9:10 pm  17-Mar.-2018 9:30 pm 
+4 Leisure  Bath time 22-Mar.-2018 11:05 pm 22-Mar.-2018 11:29 pm
+5 Leisure  Bath time 24-Mar.-2018 9:10 pm  24-Mar.-2018 9:34 pm 
+6 Leisure  Bath time 27-Mar.-2018 9:10 pm  27-Mar.-2018 9:30 pm 
 \end{verbatim}
 
 \begin{Shaded}
@@ -561,15 +574,15 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity Trait      Start                 Finish                Value
-* <chr>    <chr>      <chr>                 <chr>                 <chr>
-1 Leisure  Tummy time 17-Mar.-2018 8:00 pm  17-Mar.-2018 8:02 pm  ""   
-2 Leisure  Tummy time 18-Mar.-2018 6:40 pm  18-Mar.-2018 6:45 pm  ""   
-3 Leisure  Tummy time 20-Mar.-2018 12:09 am 20-Mar.-2018 12:14 am ""   
-4 Leisure  Tummy time 21-Mar.-2018 10:52 pm 21-Mar.-2018 10:54 pm ""   
-5 Leisure  Tummy time 24-Mar.-2018 9:37 pm  24-Mar.-2018 9:40 pm  ""   
-6 Leisure  Tummy time 27-Mar.-2018 1:53 pm  27-Mar.-2018 2:00 pm  ""   
+# A tibble: 6 x 4
+  Activity Trait      Start                 Finish               
+* <chr>    <chr>      <chr>                 <chr>                
+1 Leisure  Tummy time 17-Mar.-2018 8:00 pm  17-Mar.-2018 8:02 pm 
+2 Leisure  Tummy time 18-Mar.-2018 6:40 pm  18-Mar.-2018 6:45 pm 
+3 Leisure  Tummy time 20-Mar.-2018 12:09 am 20-Mar.-2018 12:14 am
+4 Leisure  Tummy time 21-Mar.-2018 10:52 pm 21-Mar.-2018 10:54 pm
+5 Leisure  Tummy time 24-Mar.-2018 9:37 pm  24-Mar.-2018 9:40 pm 
+6 Leisure  Tummy time 27-Mar.-2018 1:53 pm  27-Mar.-2018 2:00 pm 
 \end{verbatim}
 
 \begin{Shaded}
@@ -579,13 +592,15 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 4 x 5
-  Activity Trait    Start          Finish         Value
-* <chr>    <chr>    <chr>          <chr>          <chr>
-1 Leisure  Outdoors 5/05/18 15:37  5/05/18 16:11  ""   
-2 Leisure  Outdoors 6/05/18 13:46  6/05/18 14:46  ""   
-3 Leisure  Outdoors 8/05/18 15:10  8/05/18 16:16  ""   
-4 Leisure  Outdoors 25/05/18 14:03 25/05/18 16:03 ""   
+# A tibble: 6 x 4
+  Activity Trait    Start                Finish              
+* <chr>    <chr>    <chr>                <chr>               
+1 Leisure  Outdoors 5/05/18 15:37        5/05/18 16:11       
+2 Leisure  Outdoors 6/05/18 13:46        6/05/18 14:46       
+3 Leisure  Outdoors 8/05/18 15:10        8/05/18 16:16       
+4 Leisure  Outdoors 25/05/18 14:03       25/05/18 16:03      
+5 Leisure  Outdoors 06-Jul.-2018 2:00 pm 06-Jul.-2018 3:45 pm
+6 Leisure  Outdoors 13-Jul.-2018 1:45 pm 13-Jul.-2018 3:33 pm
 \end{verbatim}
 
 \begin{Shaded}
@@ -595,20 +610,28 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
-# A tibble: 6 x 5
-  Activity Trait     Start          Finish         Value   
-* <chr>    <chr>     <chr>          <chr>          <chr>   
-1 Leisure  Play time 7/05/18 10:35  7/05/18 11:16  ""      
-2 Leisure  Play time 8/05/18 10:03  8/05/18 10:13  ""      
-3 Leisure  Play time 9/05/18 22:25  9/05/18 22:35  ""      
-4 Leisure  Play time 10/05/18 20:57 10/05/18 21:03 ""      
-5 Leisure  Play time 15/05/18 12:41 15/05/18 13:11 ""      
-6 Leisure  Play time 16/05/18 6:58  16/05/18 7:10  With mum
+# A tibble: 6 x 4
+  Activity Trait     Start          Finish        
+* <chr>    <chr>     <chr>          <chr>         
+1 Leisure  Play time 7/05/18 10:35  7/05/18 11:16 
+2 Leisure  Play time 8/05/18 10:03  8/05/18 10:13 
+3 Leisure  Play time 9/05/18 22:25  9/05/18 22:35 
+4 Leisure  Play time 10/05/18 20:57 10/05/18 21:03
+5 Leisure  Play time 15/05/18 12:41 15/05/18 13:11
+6 Leisure  Play time 16/05/18 6:58  16/05/18 7:10 
 \end{verbatim}
 
-unique(data\$Activity)
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# sleep}
+\NormalTok{sleep <-}\StringTok{ }\KeywordTok{within}\NormalTok{(sleep,}\KeywordTok{rm}\NormalTok{(}\StringTok{"Value"}\NormalTok{)) }\CommentTok{# no values, so remove Values col}
+\NormalTok{sleep <-}\StringTok{ }\KeywordTok{within}\NormalTok{(sleep,}\KeywordTok{rm}\NormalTok{(}\StringTok{"Trait"}\NormalTok{)) }\CommentTok{# no Traits, so remove Traits col}
+\end{Highlighting}
+\end{Shaded}
 
 \subsubsection{Growth}\label{growth}
+
+No time period, just values
 
 \paragraph{Head}\label{head}
 
@@ -616,93 +639,178 @@ unique(data\$Activity)
 \begin{Highlighting}[]
 \KeywordTok{require}\NormalTok{(}\StringTok{"stringi"}\NormalTok{)}
 \KeywordTok{require}\NormalTok{(}\StringTok{"tidyr"}\NormalTok{)}
+\KeywordTok{require}\NormalTok{(}\StringTok{"sp"}\NormalTok{)}
+\KeywordTok{require}\NormalTok{(}\StringTok{"RColorBrewer"}\NormalTok{)}
+
+\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
 \NormalTok{hv <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:digit:]]"}\NormalTok{, }\StringTok{""}\NormalTok{, head}\OperatorTok{$}\NormalTok{Value) }\CommentTok{# get just integers}
-\KeywordTok{stri_sub}\NormalTok{(hv,}\DecValTok{3}\NormalTok{) <-}\StringTok{ "."}\NormalTok{;hv }\CommentTok{# insert the decimal point in the correct place}
+\KeywordTok{stri_sub}\NormalTok{(hv,}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{) <-}\StringTok{ "."}\NormalTok{;hv }\CommentTok{# insert the decimal point in the correct place}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-[1] "35." "37." "40."
+[1] "35."  "37.5" "40." 
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{head}\OperatorTok{$}\NormalTok{Value <-}\StringTok{ }\NormalTok{hv }\OperatorTok{%>%}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{() }\CommentTok{# make numeric}
 
+\NormalTok{d <-}\StringTok{ }\NormalTok{head}
 \KeywordTok{par}\NormalTok{(}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{)}
-\NormalTok{ylim <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{max}\NormalTok{(head}\OperatorTok{$}\NormalTok{Value,}\DecValTok{10}\NormalTok{))}
-\KeywordTok{with}\NormalTok{(head,}\KeywordTok{plot}\NormalTok{(Value,}
-                 \DataTypeTok{col=}\NormalTok{col1,}\DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
-                 \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,ylim),}
-                 \DataTypeTok{xlab=}\StringTok{""}\NormalTok{,}\DataTypeTok{ylab=}\StringTok{""}
+\NormalTok{ylim <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{max}\NormalTok{(d}\OperatorTok{$}\NormalTok{Value,}\DecValTok{10}\NormalTok{))}
+\KeywordTok{with}\NormalTok{(d,}\KeywordTok{plot}\NormalTok{(Value,}
+            \DataTypeTok{col=}\NormalTok{col1,}
+            \DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
+            \DataTypeTok{pch=}\DecValTok{20}\NormalTok{,}
+            \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,ylim),}
+            \DataTypeTok{ylab=}\StringTok{"Head circumference (cm)"}\NormalTok{,}
+            \DataTypeTok{xlab=}\StringTok{"Time"}\NormalTok{,}
+            \DataTypeTok{xaxt=}\StringTok{"n"}
 \NormalTok{))}
-\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DataTypeTok{xlab=}\NormalTok{month.name[}\KeywordTok{length}\NormalTok{(head}\OperatorTok{$}\NormalTok{Value)])}
+\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DataTypeTok{at=}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{,}\DataTypeTok{labels=}\NormalTok{month.abb[}\DecValTok{2}\OperatorTok{:}\DecValTok{5}\NormalTok{])}
+\CommentTok{# started solids July 2 abline()}
 \KeywordTok{title}\NormalTok{(}\StringTok{"Head circumference (cm)"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\includegraphics{eli_files/figure-latex/unnamed-chunk-11-1.pdf}
 
 \paragraph{Weight}\label{weight}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{wv <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:digit:]]"}\NormalTok{, }\StringTok{""}\NormalTok{, weight}\OperatorTok{$}\NormalTok{Value) }\CommentTok{# get just integers}
-\KeywordTok{stri_sub}\NormalTok{(wv,}\DecValTok{2}\NormalTok{) <-}\StringTok{ "."} \CommentTok{# insert the decimal point in the correct place}
-\NormalTok{weight}\OperatorTok{$}\NormalTok{Value <-}\StringTok{ }\NormalTok{wv }\OperatorTok{%>%}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{() }\CommentTok{# make numeric}
+\KeywordTok{require}\NormalTok{(RColorBrewer)}
+\KeywordTok{require}\NormalTok{(sp)}
 
-\KeywordTok{par}\NormalTok{(}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{)}
-\NormalTok{ylim <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{max}\NormalTok{(weight}\OperatorTok{$}\NormalTok{Value,}\DecValTok{10}\NormalTok{))}
-\KeywordTok{with}\NormalTok{(weight,}\KeywordTok{plot}\NormalTok{(Value,}
-                 \DataTypeTok{col=}\StringTok{"pink"}\NormalTok{,}\DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
-                 \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,ylim)}
-\NormalTok{))}
-\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DataTypeTok{xlab=}\NormalTok{month.name[}\KeywordTok{length}\NormalTok{(head}\OperatorTok{$}\NormalTok{Value)])}
-\KeywordTok{title}\NormalTok{(}\StringTok{"Weight (g)"}\NormalTok{)}
+\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
+\NormalTok{wv <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:digit:]]"}\NormalTok{, }\StringTok{""}\NormalTok{, weight}\OperatorTok{$}\NormalTok{Value) }\CommentTok{# get just integers}
+\KeywordTok{stri_sub}\NormalTok{(wv,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{) <-}\StringTok{ "."}\NormalTok{;wv }\CommentTok{# insert the decimal point in the correct place}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{eli_files/figure-latex/unnamed-chunk-12-1.pdf}
+\begin{verbatim}
+ [1] "3.61"  "3.67"  "4.01"  "4.695" "5.1"   "5.5"   "5.5"   "5.73"  "6."    "6.6"  
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{weight}\OperatorTok{$}\NormalTok{Value <-}\StringTok{ }\NormalTok{wv }\OperatorTok{%>%}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{() }\CommentTok{# make numeric}
+
+\NormalTok{d <-}\StringTok{ }\NormalTok{weight}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{)}
+\NormalTok{xlim <-}\StringTok{ }\KeywordTok{length}\NormalTok{(weight}\OperatorTok{$}\NormalTok{Value)}
+\NormalTok{ylim <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{max}\NormalTok{(weight}\OperatorTok{$}\NormalTok{Value,}\DecValTok{10}\NormalTok{))}
+\KeywordTok{with}\NormalTok{(d,}\KeywordTok{plot}\NormalTok{(Value,}
+            \DataTypeTok{col=}\NormalTok{col1,}
+            \DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
+            \DataTypeTok{pch=}\DecValTok{20}\NormalTok{,}
+            \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,ylim),}
+            \DataTypeTok{ylab=}\StringTok{"Weight (kg)"}\NormalTok{,}
+            \DataTypeTok{xlab=}\StringTok{"Time"}\NormalTok{,}
+            \DataTypeTok{xaxt=}\StringTok{"n"}
+\NormalTok{))}
+\CommentTok{# axis(1,at=1:xlim,labels=rep(month.abb[2:(xlim/2)],each=2))}
+\CommentTok{# started solids July 2 abline()}
+\KeywordTok{title}\NormalTok{(}\StringTok{"Weight (kg) over time"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
 \paragraph{Height}\label{height}
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\KeywordTok{require}\NormalTok{(RColorBrewer)}
+\KeywordTok{require}\NormalTok{(sp)}
+
+\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
 \NormalTok{hhv <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:digit:]]"}\NormalTok{, }\StringTok{""}\NormalTok{, height}\OperatorTok{$}\NormalTok{Value) }\CommentTok{# get just integers}
-\KeywordTok{stri_sub}\NormalTok{(hhv,}\DecValTok{3}\NormalTok{) <-}\StringTok{ "."}\NormalTok{ ;hhv }\CommentTok{# insert the decimal point in the correct place}
+\KeywordTok{stri_sub}\NormalTok{(hhv,}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{) <-}\StringTok{ "."}\NormalTok{ ;hhv }\CommentTok{# insert the decimal point in the correct place}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-[1] "53." "55." "61." "63."
+[1] "53."  "55."  "61.5" "63." 
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{height}\OperatorTok{$}\NormalTok{Value <-}\StringTok{ }\NormalTok{hhv }\OperatorTok{%>%}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{() }\CommentTok{# make numeric}
 
+\NormalTok{d <-}\StringTok{ }\NormalTok{height}
 \KeywordTok{par}\NormalTok{(}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{)}
-\KeywordTok{with}\NormalTok{(height,}\KeywordTok{plot}\NormalTok{(Value,}
-                 \DataTypeTok{col=}\StringTok{"pink"}\NormalTok{,}\DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
-                 \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{70}\NormalTok{)}
+\KeywordTok{with}\NormalTok{(d,}\KeywordTok{plot}\NormalTok{(Value,}
+            \DataTypeTok{col=}\NormalTok{col1,}
+            \DataTypeTok{pch=}\DecValTok{20}\NormalTok{,}
+            \DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
+            \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{70}\NormalTok{),}
+            \DataTypeTok{ylab=}\StringTok{"Height (cm)"}\NormalTok{,}
+            \DataTypeTok{xlab=}\StringTok{"Time"}\NormalTok{,}
+            \DataTypeTok{xaxt=}\StringTok{"n"}
 \NormalTok{))}
-\CommentTok{# axis(1,xlab=month.name[length(head$Value)])}
-\KeywordTok{title}\NormalTok{(}\StringTok{"Height (cm)"}\NormalTok{)}
+\KeywordTok{axis}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DataTypeTok{at=}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{,}\DataTypeTok{labels=}\NormalTok{month.abb[}\DecValTok{2}\OperatorTok{:}\DecValTok{5}\NormalTok{])}
+\CommentTok{# axis(1,at=c(0,length(d$Value)),labels=c("",""))# bookending axis tick marks}
+\CommentTok{# started solids July 2 abline()}
+\KeywordTok{title}\NormalTok{(}\StringTok{"Height (cm) over time"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{eli_files/figure-latex/unnamed-chunk-13-1.pdf}
-
 \subsubsection{Feeding}\label{feeding}
+
+Only time period, no values Started solids July 2
 
 \paragraph{Left breast}\label{left-breast}
 
-\paragraph{Right breast}\label{right-breast}
-
-\subsubsection{Diaper}\label{diaper}
+Only time period, no values
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{# started solids July 2    }
+\KeywordTok{head}\NormalTok{(breast_l)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 6 x 4
+  Activity Trait       Start                 Finish               
+* <chr>    <chr>       <chr>                 <chr>                
+1 Feeding  Left Breast 18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am 
+2 Feeding  Left Breast 18-Feb.-2018 7:39 am  18-Feb.-2018 8:05 am 
+3 Feeding  Left Breast 18-Feb.-2018 10:48 am 18-Feb.-2018 11:35 am
+4 Feeding  Left Breast 18-Feb.-2018 4:17 pm  18-Feb.-2018 4:17 pm 
+5 Feeding  Left Breast 18-Feb.-2018 4:20 pm  18-Feb.-2018 4:20 pm 
+6 Feeding  Left Breast 18-Feb.-2018 5:32 pm  18-Feb.-2018 5:40 pm 
+\end{verbatim}
+
+\paragraph{Right breast}\label{right-breast}
+
+Only time period, no values
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# started solids July 2    }
+\KeywordTok{head}\NormalTok{(breast_r)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 6 x 4
+  Activity Trait        Start                 Finish               
+* <chr>    <chr>        <chr>                 <chr>                
+1 Feeding  Right Breast 18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am 
+2 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am 
+3 Feeding  Right Breast 18-Feb.-2018 10:12 am 18-Feb.-2018 10:45 am
+4 Feeding  Right Breast 18-Feb.-2018 3:23 pm  18-Feb.-2018 3:56 pm 
+5 Feeding  Right Breast 18-Feb.-2018 6:40 pm  18-Feb.-2018 6:52 pm 
+6 Feeding  Right Breast 18-Feb.-2018 7:02 pm  18-Feb.-2018 7:30 pm 
+\end{verbatim}
+
+\subsubsection{Diaper}\label{diaper}
+
+Only time stamp (count)\\
+Started solids July 2
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# started solids july 2  }
 \KeywordTok{unique}\NormalTok{(diaper}\OperatorTok{$}\NormalTok{Trait)}
 \end{Highlighting}
 \end{Shaded}
@@ -713,49 +821,120 @@ unique(data\$Activity)
 
 \paragraph{Pee}\label{pee}
 
+Only time stamp (count)
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{unique}\NormalTok{(diaper}\OperatorTok{$}\NormalTok{Trait)}
+\CommentTok{# started solids july 2  }
+\KeywordTok{which}\NormalTok{(pee}\OperatorTok{$}\NormalTok{Start}\OperatorTok{!=}\NormalTok{pee}\OperatorTok{$}\NormalTok{Finish) }\CommentTok{# are there any time periods > 1?}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-[1] "Pee & Poo" "Poo"       "Pee"      
+integer(0)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{nrow}\NormalTok{(pee)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 1085
 \end{verbatim}
 
 \paragraph{Poo}\label{poo}
 
+Only time stamp (count)
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{unique}\NormalTok{(diaper}\OperatorTok{$}\NormalTok{Trait)}
+\CommentTok{# started solids july 2  }
+\KeywordTok{which}\NormalTok{(poo}\OperatorTok{$}\NormalTok{Start}\OperatorTok{!=}\NormalTok{poo}\OperatorTok{$}\NormalTok{Finish) }\CommentTok{# are there any time periods > 1?}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-[1] "Pee & Poo" "Poo"       "Pee"      
+integer(0)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{nrow}\NormalTok{(poo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 139
 \end{verbatim}
 
 \paragraph{Both}\label{both}
 
+Only time stamp (count)
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{unique}\NormalTok{(diaper}\OperatorTok{$}\NormalTok{Trait)}
+\CommentTok{# started solids july 2  }
+\KeywordTok{which}\NormalTok{(both}\OperatorTok{$}\NormalTok{Start}\OperatorTok{!=}\NormalTok{both}\OperatorTok{$}\NormalTok{Finish) }\CommentTok{# are there any time periods > 1?}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-[1] "Pee & Poo" "Poo"       "Pee"      
+integer(0)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{nrow}\NormalTok{(both)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] 279
 \end{verbatim}
 
 \subsubsection{Leisure}\label{leisure}
 
+Only time period, no values
+
 \paragraph{Bath}\label{bath}
+
+Only time period, no values
 
 \paragraph{Tummy}\label{tummy}
 
+Only time period, no values
+
 \paragraph{Outdoors}\label{outdoors}
 
+Only time period, no values
+
 \paragraph{Play}\label{play}
+
+Only time period, no values
+
+\subsubsection{Sleep}\label{sleep}
+
+No values, just time period
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(sleep) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+# A tibble: 6 x 3
+  Activity Start                 Finish               
+* <chr>    <chr>                 <chr>                
+1 Sleep    18-Feb.-2018 8:53 am  18-Feb.-2018 9:41 am 
+2 Sleep    18-Feb.-2018 11:32 am 18-Feb.-2018 3:16 pm 
+3 Sleep    18-Feb.-2018 10:24 pm 18-Feb.-2018 10:52 pm
+4 Sleep    19-Feb.-2018 1:40 am  19-Feb.-2018 3:00 am 
+5 Sleep    19-Feb.-2018 3:36 am  19-Feb.-2018 3:38 am 
+6 Sleep    19-Feb.-2018 5:15 pm  19-Feb.-2018 6:05 pm 
+\end{verbatim}
 
 \subsubsection{Lab}\label{lab}
 
