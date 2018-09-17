@@ -5,3 +5,5 @@ sp
 RColorBrewer
 ggplot2
 ggthemes
+bitops
+RCurl

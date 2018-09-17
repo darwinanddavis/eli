@@ -266,6 +266,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">The Life of Eli</h1>
 <h4 class="author"><em><div style="white-space: pre-line;">Matthew Malishev<sup>1</sup>*
+
 <em><sup>1</sup> Department of Biology, Emory University, 1510 Clifton Road NE, Atlanta, GA, USA, 30322</em></div></em></h4>
 
 </div>
@@ -275,7 +276,7 @@ div.tocify {
   MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "all"} } });
 </script>
 <p> </p>
-<p>Date: 2018-08-21<br />
+<p>Date: 2018-09-17<br />
 R version: 3.5.0<br />
 *Corresponding author: <a href="mailto:matthew.malishev@gmail.com">matthew.malishev@gmail.com</a><br />
 This document can be found at <a href="https://github.com/darwinanddavis/Eli" class="uri">https://github.com/darwinanddavis/Eli</a></p>
@@ -289,7 +290,7 @@ This document can be found at <a href="https://github.com/darwinanddavis/Eli" cl
 * separate hour and mins, then convert time to hours</p>
 <div id="install-dependencies" class="section level3">
 <h3>Install dependencies</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">packages &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;stringi&quot;</span>,<span class="st">&quot;tidyr&quot;</span>,<span class="st">&quot;sp&quot;</span>,<span class="st">&quot;RColorBrewer&quot;</span>,<span class="st">&quot;ggplot2&quot;</span>,<span class="st">&quot;ggthemes&quot;</span>)   
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">packages &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;stringi&quot;</span>,<span class="st">&quot;tidyr&quot;</span>,<span class="st">&quot;sp&quot;</span>,<span class="st">&quot;RColorBrewer&quot;</span>,<span class="st">&quot;ggplot2&quot;</span>,<span class="st">&quot;ggthemes&quot;</span>,<span class="st">&quot;RCurl&quot;</span>)   
 <span class="cf">if</span> (<span class="kw">require</span>(packages)) {
     <span class="kw">install.packages</span>(packages,<span class="dt">dependencies =</span> T)
     <span class="kw">require</span>(packages)
@@ -298,58 +299,15 @@ This document can be found at <a href="https://github.com/darwinanddavis/Eli" cl
 </div>
 <div id="set-plotting-function" class="section level3">
 <h3>Set plotting function</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plotting function (plot for MS or not, set bg color, set color palette from RColorBrewer, set alpha value for transperancy) </span>
-plot_it &lt;-<span class="st"> </span><span class="cf">function</span>(manuscript,bg,cp,alpha,family){ 
-  <span class="kw">graphics.off</span>()
-  <span class="cf">if</span>(manuscript<span class="op">==</span><span class="dv">0</span>){
-    <span class="cf">if</span>(bg<span class="op">==</span><span class="st">&quot;black&quot;</span>){
-      colvec&lt;-<span class="kw">magma</span>(<span class="dv">200</span>,<span class="dv">1</span>)
-      <span class="kw">par</span>(<span class="dt">bg =</span> colvec[<span class="dv">1</span>],<span class="dt">col.axis=</span><span class="st">&quot;white&quot;</span>,<span class="dt">col.lab=</span><span class="st">&quot;white&quot;</span>,<span class="dt">col.main=</span><span class="st">&quot;white&quot;</span>,
-          <span class="dt">fg=</span><span class="st">&quot;white&quot;</span>,<span class="dt">bty=</span><span class="st">&quot;n&quot;</span>,<span class="dt">las=</span><span class="dv">1</span>,<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">4</span>,<span class="dv">2</span>),<span class="dt">family=</span>family) <span class="co">#mono</span>
-      border=<span class="kw">adjustcolor</span>(<span class="st">&quot;purple&quot;</span>,<span class="dt">alpha=</span><span class="fl">0.5</span>)
-    }<span class="cf">else</span>{
-      colvec&lt;-<span class="kw">bpy.colors</span>(<span class="dv">200</span>)
-      <span class="kw">par</span>(<span class="dt">bg =</span> colvec[<span class="dv">1</span>],<span class="dt">col.axis=</span><span class="st">&quot;white&quot;</span>,<span class="dt">col.lab=</span><span class="st">&quot;white&quot;</span>,<span class="dt">col.main=</span><span class="st">&quot;white&quot;</span>,
-          <span class="dt">fg=</span><span class="st">&quot;white&quot;</span>,<span class="dt">bty=</span><span class="st">&quot;n&quot;</span>,<span class="dt">las=</span><span class="dv">1</span>,<span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">4</span>,<span class="dv">2</span>),<span class="dt">family=</span>family) 
-      border=<span class="kw">adjustcolor</span>(<span class="st">&quot;blue&quot;</span>,<span class="dt">alpha=</span><span class="fl">0.5</span>)
-    }
-  }<span class="cf">else</span>{
-<span class="co">#    graphics.off()</span>
-    <span class="kw">par</span>(<span class="dt">bty=</span><span class="st">&quot;n&quot;</span>,<span class="dt">las=</span><span class="dv">1</span>,<span class="dt">family=</span>family) 
-  }
-  <span class="co"># color palettes</span>
-  <span class="co"># ifelse(manuscript==1,colvec&lt;-adjustcolor(brewer.pal(9,cp)[9], alpha = alpha),colvec &lt;- adjustcolor(brewer.pal(9,cp)[5], alpha = alpha)) # fine tune plotting colors for plotting bg</span>
-   <span class="co"># colfunc &lt;&lt;- colorRampPalette(brewer.pal(9,cp),alpha=alpha)</span>
-  colfunc &lt;&lt;-<span class="st"> </span><span class="kw">adjustcolor</span>(<span class="kw">brewer.pal</span>(<span class="dv">9</span>,cp),<span class="dt">alpha=</span>alpha) <span class="co"># USES &lt;&lt;- OPERATOR</span>
-}</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Setting ggplot theme graphics</span>
-plot_it_gg &lt;-<span class="st"> </span><span class="cf">function</span>(bg){ <span class="co"># bg = colour to plot bg, family = font family</span>
-  <span class="cf">if</span>(bg<span class="op">==</span><span class="st">&quot;white&quot;</span>){
-    bg &lt;-<span class="st"> &quot;white&quot;</span>
-    fg &lt;-<span class="st"> &quot;black&quot;</span>
-  <span class="kw">theme_tufte</span>(<span class="dt">base_family =</span> <span class="st">&quot;HersheySans&quot;</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme</span>(<span class="dt">panel.border =</span> <span class="kw">element_blank</span>(),<span class="dt">panel.grid.major =</span> <span class="kw">element_blank</span>(),<span class="dt">panel.grid.minor =</span> <span class="kw">element_blank</span>(),<span class="dt">panel.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> bg,<span class="dt">colour =</span> bg),<span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill=</span>bg)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">theme</span>(<span class="dt">axis.line =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> fg)) <span class="op">+</span><span class="kw">theme</span>(<span class="dt">axis.ticks =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> fg)) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">colour =</span> fg)) <span class="op">+</span><span class="kw">theme</span>(<span class="dt">axis.title.x =</span> <span class="kw">element_text</span>(<span class="dt">colour =</span> fg), <span class="dt">axis.title.y =</span> <span class="kw">element_text</span>(<span class="dt">colour =</span> fg)) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">axis.text.x =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> fg),<span class="dt">axis.text.y =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> fg)) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.key =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> bg)) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.title =</span> <span class="kw">element_text</span>(<span class="dt">colour=</span>fg)) <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.text =</span> <span class="kw">element_text</span>(<span class="dt">colour=</span>fg))
-}
-  }<span class="co"># end gg</span>
-
-<span class="co"># define colours  </span>
-col1 &lt;-<span class="st"> &quot;light blue&quot;</span>
-col2 &lt;-<span class="st"> &quot;orange&quot;</span>
-
-<span class="co"># Set global plotting parameters</span>
-<span class="kw">print</span>(<span class="st">&quot;1/0, set colour, set colour palette 'display.brewer.all()',set alpha for col,set font&quot;</span>)
-<span class="kw">plot_it</span>(<span class="dv">0</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;YlOrRd&quot;</span>,<span class="dv">1</span>,<span class="st">&quot;HersheySans&quot;</span>) <span class="co"># set col function params</span>
-<span class="kw">plot_it_gg</span>(<span class="st">&quot;white&quot;</span>) <span class="co"># same as above</span></code></pre></div>
 </div>
 <div id="load-and-clean-data" class="section level3">
 <h3>Load and clean data</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(params<span class="op">$</span>dir) <span class="co"># set wd</span>
 <span class="kw">list.files</span>()</code></pre></div>
-<pre><code> [1] &quot;april.csv&quot;       &quot;eli_cache&quot;       &quot;eli_files&quot;       &quot;eli_weight.mp4&quot;  &quot;eli.docx&quot;       
- [6] &quot;eli.html&quot;        &quot;eli.md&quot;          &quot;eli.pdf&quot;         &quot;eli.R&quot;           &quot;eli.Rmd&quot;        
-[11] &quot;Eli.Rproj&quot;       &quot;eli.tex&quot;         &quot;feb.csv&quot;         &quot;junejulyaug.csv&quot; &quot;march.csv&quot;      
-[16] &quot;may.csv&quot;         &quot;Notes.csv&quot;      </code></pre>
+<pre><code> [1] &quot;april.csv&quot;       &quot;eli_cache&quot;       &quot;eli_files&quot;       &quot;eli_weight.mp4&quot;  &quot;eli.html&quot;       
+ [6] &quot;eli.md&quot;          &quot;eli.pdf&quot;         &quot;eli.R&quot;           &quot;eli.Rmd&quot;         &quot;Eli.Rproj&quot;      
+[11] &quot;eli.tex&quot;         &quot;feb.csv&quot;         &quot;junejulyaug.csv&quot; &quot;march.csv&quot;       &quot;may.csv&quot;        
+[16] &quot;Notes.csv&quot;      </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d &lt;-<span class="st"> &quot;may&quot;</span> <span class="co"># choose month or total period</span>
 
 data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">paste0</span>(d,<span class="st">&quot;.csv&quot;</span>),<span class="dt">header=</span>T,<span class="dt">sep=</span><span class="st">&quot;,&quot;</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>)
@@ -369,15 +327,17 @@ dd &lt;-<span class="st"> &quot;junejulyaug&quot;</span>
 data2 &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">paste0</span>(dd,<span class="st">&quot;.csv&quot;</span>),<span class="dt">header=</span>T,<span class="dt">sep=</span><span class="st">&quot;,&quot;</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>,<span class="dt">skip=</span><span class="dv">3</span>)
 <span class="kw">colnames</span>(data2) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Activity&quot;</span>,<span class="st">&quot;Trait&quot;</span>,<span class="st">&quot;Start&quot;</span>,<span class="st">&quot;Finish&quot;</span>,<span class="st">&quot;Value&quot;</span>)
 data2[<span class="kw">c</span>(<span class="st">&quot;Activity&quot;</span>, <span class="st">&quot;Trait&quot;</span>)] &lt;-<span class="st"> </span><span class="kw">sapply</span>(data2[<span class="kw">c</span>(<span class="st">&quot;Activity&quot;</span>, <span class="st">&quot;Trait&quot;</span>)],as.character)
-<span class="kw">str</span>(data2) </code></pre></div>
-<pre><code>'data.frame':   1330 obs. of  5 variables:
- $ Activity: chr  &quot;Health&quot; &quot;Sleep&quot; &quot;Feeding&quot; &quot;Diapering&quot; ...
- $ Trait   : chr  &quot;Vaccination&quot; &quot;&quot; &quot;Right Breast&quot; &quot;Pee&quot; ...
- $ Start   : chr  &quot;19-Jun.-2018 10:10 am&quot; &quot;27-Jun.-2018 12:05 am&quot; &quot;27-Jun.-2018 9:31 am&quot; &quot;27-Jun.-2018 9:44 am&quot; ...
- $ Finish  : chr  &quot;19-Jun.-2018 10:10 am&quot; &quot;27-Jun.-2018 9:32 am&quot; &quot;27-Jun.-2018 9:40 am&quot; &quot;27-Jun.-2018 9:44 am&quot; ...
- $ Value   : chr  &quot;4mnth immunizations&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add june july aug + data to existing data frame</span>
-data &lt;-<span class="st"> </span><span class="kw">rbind</span>(data,data2)</code></pre></div>
+
+<span class="co"># add june july aug + data to existing data frame</span>
+data &lt;-<span class="st"> </span><span class="kw">rbind</span>(data,data2)
+<span class="kw">head</span>(data)</code></pre></div>
+<pre><code>  Activity        Trait                 Start                Finish  Value
+1   Growth         Head  16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm   35cm
+2   Growth       Height  16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm   53cm
+3   Growth       Weight 16-Feb.-2018 11:59 pm 16-Feb.-2018 11:59 pm 3.61kg
+4  Feeding Right Breast  18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am       
+5  Feeding  Left Breast  18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am       
+6  Feeding Right Breast  18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am       </code></pre>
 </div>
 <div id="subset-activities" class="section level3">
 <h3>Subset activities</h3>
@@ -542,6 +502,92 @@ bath &lt;-<span class="st"> </span><span class="kw">subset</span>(leisure,<span 
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># sleep</span>
 sleep &lt;-<span class="st"> </span><span class="kw">within</span>(sleep,<span class="kw">rm</span>(<span class="st">&quot;Value&quot;</span>)) <span class="co"># no values, so remove Values col</span>
 sleep &lt;-<span class="st"> </span><span class="kw">within</span>(sleep,<span class="kw">rm</span>(<span class="st">&quot;Trait&quot;</span>)) <span class="co"># no Traits, so remove Traits col</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#change time vectors from character to posix    </span>
+?split
+?grepl
+?substr
+?strsplit 
+?nchar
+?stri_sub <span class="co"># stringi package</span>
+
+<span class="co"># separate into date, month, and time (by am and pm) cols. remove year. </span>
+<span class="co">#opt 1</span>
+ss &lt;-<span class="st"> </span><span class="kw">strsplit</span>(data<span class="op">$</span>Start, <span class="st">&quot;-2018&quot;</span>);<span class="kw">head</span>(ss)</code></pre></div>
+<pre><code>[[1]]
+[1] &quot;16-Feb.&quot;  &quot; 8:06 pm&quot;
+
+[[2]]
+[1] &quot;16-Feb.&quot;  &quot; 8:06 pm&quot;
+
+[[3]]
+[1] &quot;16-Feb.&quot;   &quot; 11:59 pm&quot;
+
+[[4]]
+[1] &quot;18-Feb.&quot;  &quot; 1:25 am&quot;
+
+[[5]]
+[1] &quot;18-Feb.&quot;  &quot; 1:35 am&quot;
+
+[[6]]
+[1] &quot;18-Feb.&quot;  &quot; 3:24 am&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ss &lt;-<span class="st"> </span><span class="kw">lapply</span>(ss, as.character);<span class="kw">head</span>(ss)</code></pre></div>
+<pre><code>[[1]]
+[1] &quot;16-Feb.&quot;  &quot; 8:06 pm&quot;
+
+[[2]]
+[1] &quot;16-Feb.&quot;  &quot; 8:06 pm&quot;
+
+[[3]]
+[1] &quot;16-Feb.&quot;   &quot; 11:59 pm&quot;
+
+[[4]]
+[1] &quot;18-Feb.&quot;  &quot; 1:25 am&quot;
+
+[[5]]
+[1] &quot;18-Feb.&quot;  &quot; 1:35 am&quot;
+
+[[6]]
+[1] &quot;18-Feb.&quot;  &quot; 3:24 am&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ss &lt;-<span class="st"> </span><span class="kw">unlist</span>(ss);<span class="kw">head</span>(ss)</code></pre></div>
+<pre><code>[1] &quot;16-Feb.&quot;   &quot; 8:06 pm&quot;  &quot;16-Feb.&quot;   &quot; 8:06 pm&quot;  &quot;16-Feb.&quot;   &quot; 11:59 pm&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ss &lt;-<span class="st"> </span><span class="kw">strsplit</span>(ss, <span class="st">&quot;-&quot;</span>);<span class="kw">head</span>(ss)</code></pre></div>
+<pre><code>[[1]]
+[1] &quot;16&quot;   &quot;Feb.&quot;
+
+[[2]]
+[1] &quot; 8:06 pm&quot;
+
+[[3]]
+[1] &quot;16&quot;   &quot;Feb.&quot;
+
+[[4]]
+[1] &quot; 8:06 pm&quot;
+
+[[5]]
+[1] &quot;16&quot;   &quot;Feb.&quot;
+
+[[6]]
+[1] &quot; 11:59 pm&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ss &lt;-<span class="st"> </span><span class="kw">unlist</span>(ss);<span class="kw">head</span>(ss)</code></pre></div>
+<pre><code>[1] &quot;16&quot;       &quot;Feb.&quot;     &quot; 8:06 pm&quot; &quot;16&quot;       &quot;Feb.&quot;     &quot; 8:06 pm&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ss &lt;-<span class="st"> </span><span class="kw">lapply</span>(ss, as.character);<span class="kw">head</span>(ss)</code></pre></div>
+<pre><code>[[1]]
+[1] &quot;16&quot;
+
+[[2]]
+[1] &quot;Feb.&quot;
+
+[[3]]
+[1] &quot; 8:06 pm&quot;
+
+[[4]]
+[1] &quot;16&quot;
+
+[[5]]
+[1] &quot;Feb.&quot;
+
+[[6]]
+[1] &quot; 8:06 pm&quot;</code></pre>
 </div>
 <div id="growth" class="section level3">
 <h3>Growth</h3>
@@ -553,7 +599,7 @@ sleep &lt;-<span class="st"> </span><span class="kw">within</span>(sleep,<span c
 <span class="kw">require</span>(<span class="st">&quot;sp&quot;</span>)
 <span class="kw">require</span>(<span class="st">&quot;RColorBrewer&quot;</span>)
 
-<span class="kw">plot_it</span>(<span class="dv">0</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;Blues&quot;</span>,<span class="fl">0.5</span>,<span class="st">&quot;HersheySans&quot;</span>)
+<span class="kw">plot_it</span>(<span class="dv">0</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;Blues&quot;</span>,<span class="st">&quot;Greens&quot;</span>,<span class="fl">0.5</span>,<span class="st">&quot;HersheySans&quot;</span>)
 hv &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;[^[:digit:]]&quot;</span>, <span class="st">&quot;&quot;</span>, head<span class="op">$</span>Value) <span class="co"># get just integers</span>
 <span class="kw">stri_sub</span>(hv,<span class="dv">3</span>,<span class="dv">1</span>) &lt;-<span class="st"> &quot;.&quot;</span>;hv <span class="co"># insert the decimal point in the correct place</span></code></pre></div>
 <pre><code>[1] &quot;35.&quot;  &quot;37.5&quot; &quot;40.&quot; </code></pre>
@@ -563,7 +609,7 @@ d &lt;-<span class="st"> </span>head
 <span class="kw">par</span>(<span class="dt">las=</span><span class="dv">1</span>,<span class="dt">bty=</span><span class="st">&quot;n&quot;</span>)
 ylim &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">max</span>(d<span class="op">$</span>Value,<span class="dv">10</span>))
 <span class="kw">with</span>(d,<span class="kw">plot</span>(Value,
-            <span class="dt">col=</span>col1,
+            <span class="dt">col=</span>colv,
             <span class="dt">type=</span><span class="st">&quot;b&quot;</span>,<span class="dt">lwd=</span><span class="dv">3</span>,
             <span class="dt">pch=</span><span class="dv">20</span>,
             <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,ylim),
@@ -580,7 +626,7 @@ ylim &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(RColorBrewer)
 <span class="kw">require</span>(sp)
 
-<span class="kw">plot_it</span>(<span class="dv">0</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;Blues&quot;</span>,<span class="fl">0.5</span>,<span class="st">&quot;HersheySans&quot;</span>)
+<span class="kw">plot_it</span>(<span class="dv">0</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;Blues&quot;</span>,<span class="st">&quot;Greens&quot;</span>,<span class="fl">0.5</span>,<span class="st">&quot;HersheySans&quot;</span>)
 wv &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;[^[:digit:]]&quot;</span>, <span class="st">&quot;&quot;</span>, weight<span class="op">$</span>Value) <span class="co"># get just integers</span>
 <span class="kw">stri_sub</span>(wv,<span class="dv">2</span>,<span class="dv">1</span>) &lt;-<span class="st"> &quot;.&quot;</span>;wv <span class="co"># insert the decimal point in the correct place</span></code></pre></div>
 <pre><code> [1] &quot;3.61&quot;  &quot;3.67&quot;  &quot;4.01&quot;  &quot;4.695&quot; &quot;5.1&quot;   &quot;5.5&quot;   &quot;5.5&quot;   &quot;5.73&quot;  &quot;6.&quot;    &quot;6.6&quot;  </code></pre>
@@ -591,7 +637,7 @@ d &lt;-<span class="st"> </span>weight
 xlim &lt;-<span class="st"> </span><span class="kw">length</span>(weight<span class="op">$</span>Value)
 ylim &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">max</span>(weight<span class="op">$</span>Value,<span class="dv">10</span>))
 <span class="kw">with</span>(d,<span class="kw">plot</span>(Value,
-            <span class="dt">col=</span>col1,
+            <span class="dt">col=</span>colv,
             <span class="dt">type=</span><span class="st">&quot;b&quot;</span>,<span class="dt">lwd=</span><span class="dv">3</span>,
             <span class="dt">pch=</span><span class="dv">20</span>,
             <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,ylim),
@@ -608,7 +654,7 @@ ylim &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">require</span>(RColorBrewer)
 <span class="kw">require</span>(sp)
 
-<span class="kw">plot_it</span>(<span class="dv">0</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;Blues&quot;</span>,<span class="fl">0.5</span>,<span class="st">&quot;HersheySans&quot;</span>)
+<span class="kw">plot_it</span>(<span class="dv">0</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;Blues&quot;</span>,<span class="st">&quot;Greens&quot;</span>,<span class="fl">0.5</span>,<span class="st">&quot;HersheySans&quot;</span>)
 hhv &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;[^[:digit:]]&quot;</span>, <span class="st">&quot;&quot;</span>, height<span class="op">$</span>Value) <span class="co"># get just integers</span>
 <span class="kw">stri_sub</span>(hhv,<span class="dv">3</span>,<span class="dv">1</span>) &lt;-<span class="st"> &quot;.&quot;</span> ;hhv <span class="co"># insert the decimal point in the correct place</span></code></pre></div>
 <pre><code>[1] &quot;53.&quot;  &quot;55.&quot;  &quot;61.5&quot; &quot;63.&quot; </code></pre>
@@ -617,7 +663,7 @@ hhv &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">
 d &lt;-<span class="st"> </span>height
 <span class="kw">par</span>(<span class="dt">las=</span><span class="dv">1</span>,<span class="dt">bty=</span><span class="st">&quot;n&quot;</span>)
 <span class="kw">with</span>(d,<span class="kw">plot</span>(Value,
-            <span class="dt">col=</span>col1,
+            <span class="dt">col=</span>colv,
             <span class="dt">pch=</span><span class="dv">20</span>,
             <span class="dt">type=</span><span class="st">&quot;b&quot;</span>,<span class="dt">lwd=</span><span class="dv">3</span>,
             <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">70</span>),

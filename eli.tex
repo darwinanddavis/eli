@@ -119,7 +119,7 @@ Clifton Road NE, Atlanta, GA, USA, 30322}}
 }
 ~
 
-Date: 2018-08-21\\
+Date: 2018-09-17\\
 R version: 3.5.0\\
 *Corresponding author:
 \href{mailto:matthew.malishev@gmail.com}{\nolinkurl{matthew.malishev@gmail.com}}\\
@@ -143,7 +143,7 @@ sleeping, in leisure and values for growth and other behavoural traits.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{packages <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"stringi"}\NormalTok{,}\StringTok{"tidyr"}\NormalTok{,}\StringTok{"sp"}\NormalTok{,}\StringTok{"RColorBrewer"}\NormalTok{,}\StringTok{"ggplot2"}\NormalTok{,}\StringTok{"ggthemes"}\NormalTok{)   }
+\NormalTok{packages <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"stringi"}\NormalTok{,}\StringTok{"tidyr"}\NormalTok{,}\StringTok{"sp"}\NormalTok{,}\StringTok{"RColorBrewer"}\NormalTok{,}\StringTok{"ggplot2"}\NormalTok{,}\StringTok{"ggthemes"}\NormalTok{,}\StringTok{"RCurl"}\NormalTok{)   }
 \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{require}\NormalTok{(packages)) \{}
     \KeywordTok{install.packages}\NormalTok{(packages,}\DataTypeTok{dependencies =}\NormalTok{ T)}
     \KeywordTok{require}\NormalTok{(packages)}
@@ -153,59 +153,6 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \subsubsection{Set plotting function}\label{set-plotting-function}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# plotting function (plot for MS or not, set bg color, set color palette from RColorBrewer, set alpha value for transperancy) }
-\NormalTok{plot_it <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(manuscript,bg,cp,alpha,family)\{ }
-  \KeywordTok{graphics.off}\NormalTok{()}
-  \ControlFlowTok{if}\NormalTok{(manuscript}\OperatorTok{==}\DecValTok{0}\NormalTok{)\{}
-    \ControlFlowTok{if}\NormalTok{(bg}\OperatorTok{==}\StringTok{"black"}\NormalTok{)\{}
-\NormalTok{      colvec<-}\KeywordTok{magma}\NormalTok{(}\DecValTok{200}\NormalTok{,}\DecValTok{1}\NormalTok{)}
-      \KeywordTok{par}\NormalTok{(}\DataTypeTok{bg =}\NormalTok{ colvec[}\DecValTok{1}\NormalTok{],}\DataTypeTok{col.axis=}\StringTok{"white"}\NormalTok{,}\DataTypeTok{col.lab=}\StringTok{"white"}\NormalTok{,}\DataTypeTok{col.main=}\StringTok{"white"}\NormalTok{,}
-          \DataTypeTok{fg=}\StringTok{"white"}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{,}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{mar=}\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{,}\DecValTok{6}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{),}\DataTypeTok{family=}\NormalTok{family) }\CommentTok{#mono}
-\NormalTok{      border=}\KeywordTok{adjustcolor}\NormalTok{(}\StringTok{"purple"}\NormalTok{,}\DataTypeTok{alpha=}\FloatTok{0.5}\NormalTok{)}
-\NormalTok{    \}}\ControlFlowTok{else}\NormalTok{\{}
-\NormalTok{      colvec<-}\KeywordTok{bpy.colors}\NormalTok{(}\DecValTok{200}\NormalTok{)}
-      \KeywordTok{par}\NormalTok{(}\DataTypeTok{bg =}\NormalTok{ colvec[}\DecValTok{1}\NormalTok{],}\DataTypeTok{col.axis=}\StringTok{"white"}\NormalTok{,}\DataTypeTok{col.lab=}\StringTok{"white"}\NormalTok{,}\DataTypeTok{col.main=}\StringTok{"white"}\NormalTok{,}
-          \DataTypeTok{fg=}\StringTok{"white"}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{,}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{mar=}\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{,}\DecValTok{6}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{),}\DataTypeTok{family=}\NormalTok{family) }
-\NormalTok{      border=}\KeywordTok{adjustcolor}\NormalTok{(}\StringTok{"blue"}\NormalTok{,}\DataTypeTok{alpha=}\FloatTok{0.5}\NormalTok{)}
-\NormalTok{    \}}
-\NormalTok{  \}}\ControlFlowTok{else}\NormalTok{\{}
-\CommentTok{#    graphics.off()}
-    \KeywordTok{par}\NormalTok{(}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{,}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{family=}\NormalTok{family) }
-\NormalTok{  \}}
-  \CommentTok{# color palettes}
-  \CommentTok{# ifelse(manuscript==1,colvec<-adjustcolor(brewer.pal(9,cp)[9], alpha = alpha),colvec <- adjustcolor(brewer.pal(9,cp)[5], alpha = alpha)) # fine tune plotting colors for plotting bg}
-   \CommentTok{# colfunc <<- colorRampPalette(brewer.pal(9,cp),alpha=alpha)}
-\NormalTok{  colfunc <<-}\StringTok{ }\KeywordTok{adjustcolor}\NormalTok{(}\KeywordTok{brewer.pal}\NormalTok{(}\DecValTok{9}\NormalTok{,cp),}\DataTypeTok{alpha=}\NormalTok{alpha) }\CommentTok{# USES <<- OPERATOR}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Setting ggplot theme graphics}
-\NormalTok{plot_it_gg <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(bg)\{ }\CommentTok{# bg = colour to plot bg, family = font family}
-  \ControlFlowTok{if}\NormalTok{(bg}\OperatorTok{==}\StringTok{"white"}\NormalTok{)\{}
-\NormalTok{    bg <-}\StringTok{ "white"}
-\NormalTok{    fg <-}\StringTok{ "black"}
-  \KeywordTok{theme_tufte}\NormalTok{(}\DataTypeTok{base_family =} \StringTok{"HersheySans"}\NormalTok{) }\OperatorTok{+}
-\StringTok{    }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{panel.border =} \KeywordTok{element_blank}\NormalTok{(),}\DataTypeTok{panel.grid.major =} \KeywordTok{element_blank}\NormalTok{(),}\DataTypeTok{panel.grid.minor =} \KeywordTok{element_blank}\NormalTok{(),}\DataTypeTok{panel.background =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ bg,}\DataTypeTok{colour =}\NormalTok{ bg),}\DataTypeTok{plot.background =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill=}\NormalTok{bg)) }\OperatorTok{+}
-\StringTok{    }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.line =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{color =}\NormalTok{ fg)) }\OperatorTok{+}\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.ticks =} \KeywordTok{element_line}\NormalTok{(}\DataTypeTok{color =}\NormalTok{ fg)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{colour =}\NormalTok{ fg)) }\OperatorTok{+}\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.title.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{colour =}\NormalTok{ fg), }\DataTypeTok{axis.title.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{colour =}\NormalTok{ fg)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{color =}\NormalTok{ fg),}\DataTypeTok{axis.text.y =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{color =}\NormalTok{ fg)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.key =} \KeywordTok{element_rect}\NormalTok{(}\DataTypeTok{fill =}\NormalTok{ bg)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{colour=}\NormalTok{fg)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{colour=}\NormalTok{fg))}
-\NormalTok{\}}
-\NormalTok{  \}}\CommentTok{# end gg}
-
-\CommentTok{# define colours  }
-\NormalTok{col1 <-}\StringTok{ "light blue"}
-\NormalTok{col2 <-}\StringTok{ "orange"}
-
-\CommentTok{# Set global plotting parameters}
-\KeywordTok{print}\NormalTok{(}\StringTok{"1/0, set colour, set colour palette 'display.brewer.all()',set alpha for col,set font"}\NormalTok{)}
-\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"YlOrRd"}\NormalTok{,}\DecValTok{1}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{) }\CommentTok{# set col function params}
-\KeywordTok{plot_it_gg}\NormalTok{(}\StringTok{"white"}\NormalTok{) }\CommentTok{# same as above}
-\end{Highlighting}
-\end{Shaded}
 
 \subsubsection{Load and clean data}\label{load-and-clean-data}
 
@@ -217,10 +164,10 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Shaded}
 
 \begin{verbatim}
- [1] "april.csv"       "eli_cache"       "eli_files"       "eli_weight.mp4"  "eli.docx"       
- [6] "eli.html"        "eli.md"          "eli.pdf"         "eli.R"           "eli.Rmd"        
-[11] "Eli.Rproj"       "eli.tex"         "feb.csv"         "junejulyaug.csv" "march.csv"      
-[16] "may.csv"         "Notes.csv"      
+ [1] "april.csv"       "eli_cache"       "eli_files"       "eli_weight.mp4"  "eli.html"       
+ [6] "eli.md"          "eli.pdf"         "eli.R"           "eli.Rmd"         "Eli.Rproj"      
+[11] "eli.tex"         "feb.csv"         "junejulyaug.csv" "march.csv"       "may.csv"        
+[16] "Notes.csv"      
 \end{verbatim}
 
 \begin{Shaded}
@@ -254,25 +201,24 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \NormalTok{data2 <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\KeywordTok{paste0}\NormalTok{(dd,}\StringTok{".csv"}\NormalTok{),}\DataTypeTok{header=}\NormalTok{T,}\DataTypeTok{sep=}\StringTok{","}\NormalTok{, }\DataTypeTok{stringsAsFactors=}\OtherTok{FALSE}\NormalTok{,}\DataTypeTok{skip=}\DecValTok{3}\NormalTok{)}
 \KeywordTok{colnames}\NormalTok{(data2) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{,}\StringTok{"Trait"}\NormalTok{,}\StringTok{"Start"}\NormalTok{,}\StringTok{"Finish"}\NormalTok{,}\StringTok{"Value"}\NormalTok{)}
 \NormalTok{data2[}\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{, }\StringTok{"Trait"}\NormalTok{)] <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(data2[}\KeywordTok{c}\NormalTok{(}\StringTok{"Activity"}\NormalTok{, }\StringTok{"Trait"}\NormalTok{)],as.character)}
-\KeywordTok{str}\NormalTok{(data2) }
+
+\CommentTok{# add june july aug + data to existing data frame}
+\NormalTok{data <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(data,data2)}
+\KeywordTok{head}\NormalTok{(data)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-'data.frame':   1330 obs. of  5 variables:
- $ Activity: chr  "Health" "Sleep" "Feeding" "Diapering" ...
- $ Trait   : chr  "Vaccination" "" "Right Breast" "Pee" ...
- $ Start   : chr  "19-Jun.-2018 10:10 am" "27-Jun.-2018 12:05 am" "27-Jun.-2018 9:31 am" "27-Jun.-2018 9:44 am" ...
- $ Finish  : chr  "19-Jun.-2018 10:10 am" "27-Jun.-2018 9:32 am" "27-Jun.-2018 9:40 am" "27-Jun.-2018 9:44 am" ...
- $ Value   : chr  "4mnth immunizations" "" "" "" ...
+# A tibble: 6 x 5
+  Activity Trait        Start                 Finish                Value 
+* <chr>    <chr>        <chr>                 <chr>                 <chr> 
+1 Growth   Head         16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  35cm  
+2 Growth   Height       16-Feb.-2018 8:06 pm  16-Feb.-2018 8:06 pm  53cm  
+3 Growth   Weight       16-Feb.-2018 11:59 pm 16-Feb.-2018 11:59 pm 3.61kg
+4 Feeding  Right Breast 18-Feb.-2018 1:25 am  18-Feb.-2018 1:35 am  ""    
+5 Feeding  Left Breast  18-Feb.-2018 1:35 am  18-Feb.-2018 1:44 am  ""    
+6 Feeding  Right Breast 18-Feb.-2018 3:24 am  18-Feb.-2018 3:45 am  ""    
 \end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# add june july aug + data to existing data frame}
-\NormalTok{data <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(data,data2)}
-\end{Highlighting}
-\end{Shaded}
 
 \subsubsection{Subset activities}\label{subset-activities}
 
@@ -629,6 +575,140 @@ sleeping, in leisure and values for growth and other behavoural traits.
 \end{Highlighting}
 \end{Shaded}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#change time vectors from character to posix    }
+\NormalTok{?split}
+\NormalTok{?grepl}
+\NormalTok{?substr}
+\NormalTok{?strsplit }
+\NormalTok{?nchar}
+\NormalTok{?stri_sub }\CommentTok{# stringi package}
+
+\CommentTok{# separate into date, month, and time (by am and pm) cols. remove year. }
+\CommentTok{#opt 1}
+\NormalTok{ss <-}\StringTok{ }\KeywordTok{strsplit}\NormalTok{(data}\OperatorTok{$}\NormalTok{Start, }\StringTok{"-2018"}\NormalTok{);}\KeywordTok{head}\NormalTok{(ss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+[1] "16-Feb."  " 8:06 pm"
+
+[[2]]
+[1] "16-Feb."  " 8:06 pm"
+
+[[3]]
+[1] "16-Feb."   " 11:59 pm"
+
+[[4]]
+[1] "18-Feb."  " 1:25 am"
+
+[[5]]
+[1] "18-Feb."  " 1:35 am"
+
+[[6]]
+[1] "18-Feb."  " 3:24 am"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ss <-}\StringTok{ }\KeywordTok{lapply}\NormalTok{(ss, as.character);}\KeywordTok{head}\NormalTok{(ss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+[1] "16-Feb."  " 8:06 pm"
+
+[[2]]
+[1] "16-Feb."  " 8:06 pm"
+
+[[3]]
+[1] "16-Feb."   " 11:59 pm"
+
+[[4]]
+[1] "18-Feb."  " 1:25 am"
+
+[[5]]
+[1] "18-Feb."  " 1:35 am"
+
+[[6]]
+[1] "18-Feb."  " 3:24 am"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ss <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(ss);}\KeywordTok{head}\NormalTok{(ss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "16-Feb."   " 8:06 pm"  "16-Feb."   " 8:06 pm"  "16-Feb."   " 11:59 pm"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ss <-}\StringTok{ }\KeywordTok{strsplit}\NormalTok{(ss, }\StringTok{"-"}\NormalTok{);}\KeywordTok{head}\NormalTok{(ss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+[1] "16"   "Feb."
+
+[[2]]
+[1] " 8:06 pm"
+
+[[3]]
+[1] "16"   "Feb."
+
+[[4]]
+[1] " 8:06 pm"
+
+[[5]]
+[1] "16"   "Feb."
+
+[[6]]
+[1] " 11:59 pm"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ss <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(ss);}\KeywordTok{head}\NormalTok{(ss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[1] "16"       "Feb."     " 8:06 pm" "16"       "Feb."     " 8:06 pm"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ss <-}\StringTok{ }\KeywordTok{lapply}\NormalTok{(ss, as.character);}\KeywordTok{head}\NormalTok{(ss)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[1]]
+[1] "16"
+
+[[2]]
+[1] "Feb."
+
+[[3]]
+[1] " 8:06 pm"
+
+[[4]]
+[1] "16"
+
+[[5]]
+[1] "Feb."
+
+[[6]]
+[1] " 8:06 pm"
+\end{verbatim}
+
 \subsubsection{Growth}\label{growth}
 
 No time period, just values
@@ -642,7 +722,7 @@ No time period, just values
 \KeywordTok{require}\NormalTok{(}\StringTok{"sp"}\NormalTok{)}
 \KeywordTok{require}\NormalTok{(}\StringTok{"RColorBrewer"}\NormalTok{)}
 
-\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
+\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\StringTok{"Greens"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
 \NormalTok{hv <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:digit:]]"}\NormalTok{, }\StringTok{""}\NormalTok{, head}\OperatorTok{$}\NormalTok{Value) }\CommentTok{# get just integers}
 \KeywordTok{stri_sub}\NormalTok{(hv,}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{) <-}\StringTok{ "."}\NormalTok{;hv }\CommentTok{# insert the decimal point in the correct place}
 \end{Highlighting}
@@ -660,7 +740,7 @@ No time period, just values
 \KeywordTok{par}\NormalTok{(}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{)}
 \NormalTok{ylim <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{max}\NormalTok{(d}\OperatorTok{$}\NormalTok{Value,}\DecValTok{10}\NormalTok{))}
 \KeywordTok{with}\NormalTok{(d,}\KeywordTok{plot}\NormalTok{(Value,}
-            \DataTypeTok{col=}\NormalTok{col1,}
+            \DataTypeTok{col=}\NormalTok{colv,}
             \DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
             \DataTypeTok{pch=}\DecValTok{20}\NormalTok{,}
             \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,ylim),}
@@ -681,7 +761,7 @@ No time period, just values
 \KeywordTok{require}\NormalTok{(RColorBrewer)}
 \KeywordTok{require}\NormalTok{(sp)}
 
-\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
+\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\StringTok{"Greens"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
 \NormalTok{wv <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:digit:]]"}\NormalTok{, }\StringTok{""}\NormalTok{, weight}\OperatorTok{$}\NormalTok{Value) }\CommentTok{# get just integers}
 \KeywordTok{stri_sub}\NormalTok{(wv,}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{) <-}\StringTok{ "."}\NormalTok{;wv }\CommentTok{# insert the decimal point in the correct place}
 \end{Highlighting}
@@ -700,7 +780,7 @@ No time period, just values
 \NormalTok{xlim <-}\StringTok{ }\KeywordTok{length}\NormalTok{(weight}\OperatorTok{$}\NormalTok{Value)}
 \NormalTok{ylim <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{max}\NormalTok{(weight}\OperatorTok{$}\NormalTok{Value,}\DecValTok{10}\NormalTok{))}
 \KeywordTok{with}\NormalTok{(d,}\KeywordTok{plot}\NormalTok{(Value,}
-            \DataTypeTok{col=}\NormalTok{col1,}
+            \DataTypeTok{col=}\NormalTok{colv,}
             \DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
             \DataTypeTok{pch=}\DecValTok{20}\NormalTok{,}
             \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,ylim),}
@@ -721,7 +801,7 @@ No time period, just values
 \KeywordTok{require}\NormalTok{(RColorBrewer)}
 \KeywordTok{require}\NormalTok{(sp)}
 
-\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
+\KeywordTok{plot_it}\NormalTok{(}\DecValTok{0}\NormalTok{,}\StringTok{"blue"}\NormalTok{,}\StringTok{"Blues"}\NormalTok{,}\StringTok{"Greens"}\NormalTok{,}\FloatTok{0.5}\NormalTok{,}\StringTok{"HersheySans"}\NormalTok{)}
 \NormalTok{hhv <-}\StringTok{ }\KeywordTok{gsub}\NormalTok{(}\StringTok{"[^[:digit:]]"}\NormalTok{, }\StringTok{""}\NormalTok{, height}\OperatorTok{$}\NormalTok{Value) }\CommentTok{# get just integers}
 \KeywordTok{stri_sub}\NormalTok{(hhv,}\DecValTok{3}\NormalTok{,}\DecValTok{1}\NormalTok{) <-}\StringTok{ "."}\NormalTok{ ;hhv }\CommentTok{# insert the decimal point in the correct place}
 \end{Highlighting}
@@ -738,7 +818,7 @@ No time period, just values
 \NormalTok{d <-}\StringTok{ }\NormalTok{height}
 \KeywordTok{par}\NormalTok{(}\DataTypeTok{las=}\DecValTok{1}\NormalTok{,}\DataTypeTok{bty=}\StringTok{"n"}\NormalTok{)}
 \KeywordTok{with}\NormalTok{(d,}\KeywordTok{plot}\NormalTok{(Value,}
-            \DataTypeTok{col=}\NormalTok{col1,}
+            \DataTypeTok{col=}\NormalTok{colv,}
             \DataTypeTok{pch=}\DecValTok{20}\NormalTok{,}
             \DataTypeTok{type=}\StringTok{"b"}\NormalTok{,}\DataTypeTok{lwd=}\DecValTok{3}\NormalTok{,}
             \DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{70}\NormalTok{),}

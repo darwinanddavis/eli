@@ -2,6 +2,7 @@
 title: The Life of Eli
 author: |
  | Matthew Malishev^1^*
+ |
  | _^1^ Department of Biology, Emory University, 1510 Clifton Road NE, Atlanta, GA, USA, 30322_
 #bibliography:/Users/malishev/Documents/Melbourne Uni/Thesis_2016/library.bib
 fontsize: 10
@@ -127,62 +128,24 @@ devtools::session_info()
 ```
 
 ### Install dependencies
-```{r, load packages, include=T, cache=T, message=F, warning=F, results='hide'}
-packages <- c("stringi","tidyr","sp","RColorBrewer","ggplot2","ggthemes")   
+```{r, load packages, include=T, cache=F, message=F, warning=F, results='hide'}
+packages <- c("stringi","tidyr","sp","RColorBrewer","ggplot2","ggthemes","RCurl")   
 if (require(packages)) {
     install.packages(packages,dependencies = T)
     require(packages)
 }
 lapply(packages,library,character.only=T)
 ```
+
 ### Set plotting function  
-```{r, eval=T, cache = TRUE, tidy = TRUE, lazy = TRUE, results="hide"}
-# plotting function (plot for MS or not, set bg color, set color palette from RColorBrewer, set alpha value for transperancy) 
-plot_it <- function(manuscript,bg,cp,alpha,family){ 
-  graphics.off()
-  if(manuscript==0){
-    if(bg=="black"){
-      colvec<-magma(200,1)
-      par(bg = colvec[1],col.axis="white",col.lab="white",col.main="white",
-          fg="white",bty="n",las=1,mar=c(5,6,4,2),family=family) #mono
-      border=adjustcolor("purple",alpha=0.5)
-    }else{
-      colvec<-bpy.colors(200)
-      par(bg = colvec[1],col.axis="white",col.lab="white",col.main="white",
-          fg="white",bty="n",las=1,mar=c(5,6,4,2),family=family) 
-      border=adjustcolor("blue",alpha=0.5)
-    }
-  }else{
-#    graphics.off()
-    par(bty="n",las=1,family=family) 
-  }
-  # color palettes
-  # ifelse(manuscript==1,colvec<-adjustcolor(brewer.pal(9,cp)[9], alpha = alpha),colvec <- adjustcolor(brewer.pal(9,cp)[5], alpha = alpha)) # fine tune plotting colors for plotting bg
-   # colfunc <<- colorRampPalette(brewer.pal(9,cp),alpha=alpha)
-  colfunc <<- adjustcolor(brewer.pal(9,cp),alpha=alpha) # USES <<- OPERATOR
-}
-```
+```{r results="hide", echo=F}
 
-```{r, eval=T, cache = TRUE, tidy = TRUE, lazy = TRUE, results="hide"}
-# Setting ggplot theme graphics
-plot_it_gg <- function(bg){ # bg = colour to plot bg, family = font family
-  if(bg=="white"){
-    bg <- "white"
-    fg <- "black"
-  theme_tufte(base_family = "HersheySans") +
-    theme(panel.border = element_blank(),panel.grid.major = element_blank(),panel.grid.minor = element_blank(),panel.background = element_rect(fill = bg,colour = bg),plot.background = element_rect(fill=bg)) +
-    theme(axis.line = element_line(color = fg)) +theme(axis.ticks = element_line(color = fg)) + theme(plot.title = element_text(colour = fg)) +theme(axis.title.x = element_text(colour = fg), axis.title.y = element_text(colour = fg)) + theme(axis.text.x = element_text(color = fg),axis.text.y = element_text(color = fg)) + theme(legend.key = element_rect(fill = bg)) + theme(legend.title = element_text(colour=fg)) + theme(legend.text = element_text(colour=fg))
-}
-  }# end gg
+script <- getURL("https://raw.githubusercontent.com/darwinanddavis/plot_it/master/plot_it.R", ssl.verifypeer = FALSE)
+eval(parse(text = script))
 
-# define colours  
-col1 <- "light blue"
-col2 <- "orange"
-
-# Set global plotting parameters
-print("1/0, set colour, set colour palette 'display.brewer.all()',set alpha for col,set font")
-plot_it(0,"blue","YlOrRd",1,"HersheySans") # set col function params
-plot_it_gg("white") # same as above
+cat("plot_it( \n0 for presentation, 1 for manuscript, \nset colour for background, \nset colour palette. use 'display.brewer.all()', \nset alpha for colour transperancy, \nset font style \n)")
+plot_it(0,"blue","Spectral","Greens",1,"mono") # set col function params
+plot_it_gg("white") # same as above 
 ```
 
 ### Load and clean data  
@@ -190,6 +153,7 @@ plot_it_gg("white") # same as above
 setwd(params$dir) # set wd
 list.files()
 ```
+
 ```{r}
 d <- "may" # choose month or total period
 
@@ -204,11 +168,10 @@ dd <- "junejulyaug"
 data2 <- read.csv(paste0(dd,".csv"),header=T,sep=",", stringsAsFactors=FALSE,skip=3)
 colnames(data2) <- c("Activity","Trait","Start","Finish","Value")
 data2[c("Activity", "Trait")] <- sapply(data2[c("Activity", "Trait")],as.character)
-str(data2) 
 
 # add june july aug + data to existing data frame
 data <- rbind(data,data2)
-
+head(data)
 ```
 
 ### Subset activities  
@@ -256,8 +219,26 @@ sleep <- within(sleep,rm("Trait")) # no Traits, so remove Traits col
 
 ```
 
-```{r echo=F, warnings=F, results="hide"}
+```{r echo=F, warnings=F, results="hide", eval=F}
 # get time for each state by month, no need for day
+
+# current method (17-9-18)
+ss <- strsplit(data$Start, "-2018");head(ss)
+gsub("[^[:digit:]]", "", ss)[1] # get just numbers
+gsub("[^[:digit:]]", " ", ss)[1] # get just numbers
+gsub("[[:digit:]]", "", ss)[1] # get just characters
+
+# testing how to get difference in time cols 
+test <- breast_l[3,]
+test[,c(3,4)]
+test$Start
+as.Date("18/02/18", "%d/%m/%y") # testing as.Data function
+test$diff_in_days<- difftime(test$Start ,test$Finish , units = c("hours"))
+as.Date("10:45 pm", "%m/%d/%y")
+
+```
+
+```{r}
 
 #change time vectors from character to posix    
 ?split
@@ -276,8 +257,6 @@ ss <- strsplit(ss, "-");head(ss)
 ss <- unlist(ss);head(ss)
 ss <- lapply(ss, as.character);head(ss)
 
-gsub("[^[:digit:]]", "", ss)[1] # get just numbers
-gsub("[[:digit:]]", "", ss)[1] # get just characters
 
 ```
 
@@ -335,7 +314,7 @@ require("tidyr")
 require("sp")
 require("RColorBrewer")
 
-plot_it(0,"blue","Blues",0.5,"HersheySans")
+plot_it(0,"blue","Blues","Greens",0.5,"HersheySans")
 hv <- gsub("[^[:digit:]]", "", head$Value) # get just integers
 stri_sub(hv,3,1) <- ".";hv # insert the decimal point in the correct place
 head$Value <- hv %>% as.numeric() # make numeric
@@ -344,7 +323,7 @@ d <- head
 par(las=1,bty="n")
 ylim <- round(max(d$Value,10))
 with(d,plot(Value,
-            col=col1,
+            col=colv,
             type="b",lwd=3,
             pch=20,
             ylim=c(0,ylim),
@@ -362,7 +341,7 @@ title("Head circumference (cm)")
 require(RColorBrewer)
 require(sp)
 
-plot_it(0,"blue","Blues",0.5,"HersheySans")
+plot_it(0,"blue","Blues","Greens",0.5,"HersheySans")
 wv <- gsub("[^[:digit:]]", "", weight$Value) # get just integers
 stri_sub(wv,2,1) <- ".";wv # insert the decimal point in the correct place
 weight$Value <- wv %>% as.numeric() # make numeric
@@ -372,7 +351,7 @@ par(las=1,bty="n")
 xlim <- length(weight$Value)
 ylim <- round(max(weight$Value,10))
 with(d,plot(Value,
-            col=col1,
+            col=colv,
             type="b",lwd=3,
             pch=20,
             ylim=c(0,ylim),
@@ -390,7 +369,7 @@ title("Weight (kg) over time")
 require(RColorBrewer)
 require(sp)
 
-plot_it(0,"blue","Blues",0.5,"HersheySans")
+plot_it(0,"blue","Blues","Greens",0.5,"HersheySans")
 hhv <- gsub("[^[:digit:]]", "", height$Value) # get just integers
 stri_sub(hhv,3,1) <- "." ;hhv # insert the decimal point in the correct place
 height$Value <- hhv %>% as.numeric() # make numeric
@@ -398,7 +377,7 @@ height$Value <- hhv %>% as.numeric() # make numeric
 d <- height
 par(las=1,bty="n")
 with(d,plot(Value,
-            col=col1,
+            col=colv,
             pch=20,
             type="b",lwd=3,
             ylim=c(0,70),
