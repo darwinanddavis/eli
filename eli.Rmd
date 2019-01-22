@@ -134,7 +134,8 @@ if (require(packages)) {
     install.packages(packages,dependencies = T)
     require(packages)
 }
-lapply(packages,library,character.only=T)
+ppp <- lapply(packages,require,character.only=T)
+if(any(ppp==F)){cbind(packages,ppp);cat("\n\n\n ---> Check packages are loaded properly <--- \n\n\n")}
 ```
 
 ### Set plotting function  
@@ -221,6 +222,19 @@ sleep <- within(sleep,rm("Trait")) # no Traits, so remove Traits col
 
 ```{r echo=F, warnings=F, results="hide", eval=F}
 # get time for each state by month, no need for day
+
+# separate day month and years
+# from heatmap ref in 'figures' Presentations Github 
+require(dplyr); require(tidyr); require(Interpol.T);require(lubridate)
+data<- data(Trentino_hourly_T,package = "Interpol.T")
+names(h_d_t)[1:5]<- c("stationid","date","hour","temp","flag")
+df<- tbl_df(h_d_t) %>%
+  filter(stationid =="T0001")
+
+df<- df %>% mutate(year = year(date),
+                   month = month(date, label=TRUE),
+                   day = day(date))
+
 
 # current method (17-9-18)
 ss <- strsplit(data$Start, "-2018");head(ss)
